@@ -32,7 +32,7 @@ class Ppplan
     }
     protected function askEstimationFor($answer, &$answers)
     {
-        $answer->hours = intval(readline("How long will it take to $answer->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n"));
+        $answer->hours = floatval(readline("How long will it take to $answer->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n"));
         if ($answer->hours == 0) {
             $answer->toEstimate = false;
             $subAnswers = $this->askDecomposeFor($answer);
