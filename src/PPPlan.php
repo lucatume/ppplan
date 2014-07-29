@@ -77,24 +77,24 @@ class Ppplan {
 
     public function theResponse(Objective $objective, array $answers, $echo = true)
     {
-        $list = $this->listColor(sprintf('Things to do to %s', $objective->title));
-		$list .= "\n";
+        $fileList = sprintf('Things to do to %s', $objective->title);
+        $fileList .= "\n";
 		$objective->totalHours = 0;
 		foreach ( $answers as $answer ) {
 			if ( $answer->hours == 0 ) {
 				continue;
 			}
 			$tabs = "\n\t";
-            $list .= $this->listColor(sprintf('%s- %s (est. %s hr%s)', $tabs, $answer->title, $answer->hours, Utils::getPluralSuffixFor($answer->hours)));
+            $fileList .= sprintf('%s- %s (est. %s hr%s)', $tabs, $answer->title, $answer->hours, Utils::getPluralSuffixFor($answer->hours));
 			$objective->totalHours += $answer->hours;
 		}
-		$list .= "\n\n";
-        $list .= $this->listColor(sprintf('that\'s a total estimate of %s hour%s', $objective->totalHours, Utils::getPluralSuffixFor($objective->totalHours)));
+        $fileList .= "\n\n";
+        $fileList .= sprintf('that\'s a total estimate of %s hour%s', $objective->totalHours, Utils::getPluralSuffixFor($objective->totalHours));
 		if ( $echo ) {
-			echo "\n" . $list . "\n\n";
+            echo "\n" . $this->listColor($fileList) . "\n\n";
 		}
 
-		return $list;
+        return $fileList;
 	}
 
 	public function theSavingOptions( $list ) {
