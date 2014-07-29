@@ -38,15 +38,15 @@ class ListReader
         $lines = array_values($lines);
         array_pop($lines);
         array_pop($lines);
-        $answers = array();
+        $tasks = array();
         foreach ($lines as $line) {
             $matches = array();
             preg_match("/\\t+-\\s+(.*)\\s\\(est.\\s+([\\d\\.]+)/uim", $line, $matches);
             $action = $matches[1];
             $estimate = floatval($matches[2]);
-            $answer = new Answer($action, $estimate, true);
-            $answers[] = $answer;
+            $task = new Task($action, $estimate, true);
+            $tasks[] = $task;
         }
-        return $answers;
+        return $tasks;
     }
 }

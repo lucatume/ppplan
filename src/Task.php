@@ -3,7 +3,7 @@
 namespace PPPlan;
 
 
-class Answer
+class Task
 {
     public $title;
     public $hours;

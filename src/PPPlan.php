@@ -3,16 +3,20 @@
 namespace PPPlan;
 
 
-class Ppplan
+class PPPlan
 {
     
     protected $colors;
-    protected $lineColor = 'green';
+    protected $review;
+    protected $lineColor = 'cyan';
     protected $listLineColor = 'white';
+    protected $headPrinted;
     
-    public function __construct(Colors $colors)
+    public function __construct(Colors $colors, $review = false)
     {
         $this->colors = $colors;
+        $this->review = $review;
+        $this->headPrinted = false;
     }
     
     protected function color($string)
@@ -29,81 +33,86 @@ class Ppplan
     {
         if ($objective->title != '') {
             $line = sprintf('Reviewing the things to do to %s', $objective->title);
-            echo $this->color($line);
+            echo "\n" . $this->color($line);
+            echo "\n" . $this->color(preg_replace('/./', '-', $line)) . "\n";
         } else {
             $objective->title = readline($this->color("What do you want to do?\n\n"));
         }
     }
     
-    public function theQuestions(Objective $objective, array $answers, $review = false)
+    public function theQuestions(Objective $objective, array $tasks, $review = false)
     {
-        $answers = array_merge(array(
-            new Answer($objective->title, $objective->totalHours, !$review)
-        ) , $answers);
-        while ($this->thereAreUnestimated($answers)) {
-            foreach ($answers as $answer) {
-                if (!$answer->toEstimate and $answer->hours == 0) {
+        $tasks = array_merge(array(
+            new Task($objective->title, $objective->totalHours, !$review)
+        ) , $tasks);
+        while ($this->thereAreUnestimated($tasks)) {
+            foreach ($tasks as $task) {
+                if (!$task->toEstimate and $task->hours == 0) {
                     continue;
                 }
-                $this->askEstimationFor($answer, $answers);
+                $this->askEstimationFor($task, $tasks);
             }
         }
         
-        return $answers;
+        return $tasks;
     }
     
-    protected function askEstimationFor(Answer $answer, array & $answers)
+    protected function askEstimationFor(Task $task, array & $tasks)
     {
-        if ($answer->hours > 0) {
-            echo $this->color("\nPrevious estimate to $answer->title is $answer->hours hours.", 'cyan');
+        if ($this->review and $task->hours > 0) {
+            echo $this->color("\nPrevious estimate to $task->title is $task->hours hours.", 'cyan');
+            if (!$this->headPrinted) {
+                echo "\n";
+                // remove the objective from the tasks
+                unset($tasks[0]);
+                $tasks = array_values($tasks);
+                $this->headPrinted = true;
+            }
         }
-        if ($answer->toEstimate) {
-            $line = $this->color("\nHow long will it take to $answer->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
-            $answer->hours = floatval(readline($line));
+        if ($task->toEstimate) {
+            $line = $this->color("\nHow long will it take to $task->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
+            $task->hours = floatval(readline($line));
         }
-        if ($answer->hours == 0) {
-            $answer->toEstimate = false;
-            $subAnswers = $this->askDecomposeFor($answer);
-            foreach ($subAnswers as $subAnswer) {
-                $answers[] = new Answer($subAnswer);
+        if ($task->hours == 0) {
+            $task->toEstimate = false;
+            $subTasks = $this->askDecomposeFor($task);
+            foreach ($subTasks as $subTask) {
+                $tasks[] = new Task($subTask);
             }
         } else {
-            $answer->toEstimate = false;
+            $task->toEstimate = false;
         }
     }
     
-    protected function askDecomposeFor(Answer $answer)
+    protected function askDecomposeFor(Task $task)
     {
-        $subAnswers = explode(', ', readline($this->color("\nOk, what's needed to $answer->title?\n(Answer with a comma separated list)\n\n")));
+        $subTasks = explode(', ', readline($this->color("\nOk, what's needed to $task->title?\n(Task with a comma separated list)\n\n")));
         
-        return $subAnswers;
+        return $subTasks;
     }
     
-    protected function thereAreUnestimated(array $answers)
+    protected function thereAreUnestimated(array $tasks)
     {
-        foreach ($answers as $answer) {
-            if ($answer->toEstimate) {
+        foreach ($tasks as $task) {
+            if ($task->toEstimate) {
                 return true;
             }
         }
     }
     
-    public function theResponse(Objective $objective, array $answers, $echo = true)
+    public function theResponse(Objective $objective, array $tasks, $echo = true)
     {
         $fileList = sprintf('Things to do to %s', $objective->title);
         $fileList.= "\n";
         $objective->totalHours = 0;
         
-        // remove the objective from the answers
-        unset($answers[0]);
-        $answers = array_values($answers);
-        foreach ($answers as $answer) {
-            if ($answer->hours == 0) {
+        foreach ($tasks as $task) {
+            if ($task->hours == 0) {
                 continue;
             }
             $tabs = "\n\t";
-            $fileList.= sprintf('%s- %s (est. %s hr%s)', $tabs, $answer->title, $answer->hours, Utils::getPluralSuffixFor($answer->hours));
-            $objective->totalHours+= $answer->hours;
+            $fileList.= sprintf('%s- %s (est. %s hr%s)', $tabs, $task->title, $task->hours, Utils::getPluralSuffixFor($task->hours));
+            $objective->totalHours+= $task->hours;
         }
         $fileList.= "\n\n";
         $fileList.= sprintf('that\'s a total estimate of %s hour%s', $objective->totalHours, Utils::getPluralSuffixFor($objective->totalHours));
@@ -116,8 +125,8 @@ class Ppplan
     
     public function theSavingOptions($list)
     {
-        $answer = readline($this->color("Do you want to save the list to a file (y/n)? "));
-        if (!preg_match('/^(Y|y|yes|Yes)/', $answer)) {
+        $task = readline($this->color("Do you want to save the list to a file (y/n)? "));
+        if (!preg_match('/^(Y|y|yes|Yes)/', $task)) {
             return;
         }
         $cwd = getcwd();
