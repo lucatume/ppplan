@@ -28,7 +28,7 @@ if (isset($argv[1])) {
 }
 
 $colors = new Colors();
-$ppplan = new Ppplan($colors);
+$ppplan = new Ppplan($colors, $review);
 
 $ppplan->theHead($objective);
 $answers = $ppplan->theQuestions($objective, $answers, $review);

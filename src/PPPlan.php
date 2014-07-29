@@ -7,12 +7,14 @@ class Ppplan
 {
     
     protected $colors;
+    protected $review;
     protected $lineColor = 'green';
     protected $listLineColor = 'white';
     
-    public function __construct(Colors $colors)
+    public function __construct(Colors $colors, $review = false)
     {
         $this->colors = $colors;
+        $this->review = $review;
     }
     
     protected function color($string)
@@ -27,7 +29,7 @@ class Ppplan
     
     public function theHead(Objective $objective)
     {
-        if ($objective->title != '') {
+        if ($this->review) {
             $line = sprintf('Reviewing the things to do to %s', $objective->title);
             echo $this->color($line);
         } else {
@@ -55,7 +57,7 @@ class Ppplan
     protected function askEstimationFor(Answer $answer, array & $answers)
     {
         if ($answer->hours > 0) {
-            echo $this->color("\nPrevious estimate to $answer->title is $answer->hours hours.", 'cyan');
+            echo $this->color(sprintf("\nPrevious estimate to %s is %s hour%s.", $answer->title, $answer->hours, Utils::getPluralSuffixFor($answer->hours)), 'cyan');
         }
         if ($answer->toEstimate) {
             $line = $this->color("\nHow long will it take to $answer->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
