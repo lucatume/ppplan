@@ -3,16 +3,18 @@
 namespace PPPlan;
 
 
-class Ppplan
+class PPPlan
 {
     
     protected $colors;
+    protected $review;
     protected $lineColor = 'green';
     protected $listLineColor = 'white';
     
-    public function __construct(Colors $colors)
+    public function __construct(Colors $colors, $review = false)
     {
         $this->colors = $colors;
+        $this->review = $review;
     }
     
     protected function color($string)
@@ -54,7 +56,7 @@ class Ppplan
     
     protected function askEstimationFor(Answer $answer, array & $answers)
     {
-        if ($answer->hours > 0) {
+        if ($this->review) {
             echo $this->color("\nPrevious estimate to $answer->title is $answer->hours hours.", 'cyan');
         }
         if ($answer->toEstimate) {
