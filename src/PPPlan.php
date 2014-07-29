@@ -8,13 +8,15 @@ class PPPlan
     
     protected $colors;
     protected $review;
-    protected $lineColor = 'green';
+    protected $lineColor = 'cyan';
     protected $listLineColor = 'white';
+    protected $headPrinted;
     
     public function __construct(Colors $colors, $review = false)
     {
         $this->colors = $colors;
         $this->review = $review;
+        $this->headPrinted = false;
     }
     
     protected function color($string)
@@ -31,7 +33,8 @@ class PPPlan
     {
         if ($objective->title != '') {
             $line = sprintf('Reviewing the things to do to %s', $objective->title);
-            echo $this->color($line);
+            echo "\n" . $this->color($line);
+            echo "\n" . $this->color(preg_replace('/./', '-', $line)) . "\n";
         } else {
             $objective->title = readline($this->color("What do you want to do?\n\n"));
         }
@@ -56,8 +59,15 @@ class PPPlan
     
     protected function askEstimationFor(Task $task, array & $tasks)
     {
-        if ($this->review) {
+        if ($this->review and $task->hours > 0) {
             echo $this->color("\nPrevious estimate to $task->title is $task->hours hours.", 'cyan');
+            if (!$this->headPrinted) {
+                echo "\n";
+                // remove the objective from the tasks
+                unset($tasks[0]);
+                $tasks = array_values($tasks);
+                $this->headPrinted = true;
+            }
         }
         if ($task->toEstimate) {
             $line = $this->color("\nHow long will it take to $task->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
@@ -96,9 +106,6 @@ class PPPlan
         $fileList.= "\n";
         $objective->totalHours = 0;
         
-        // remove the objective from the answers
-        unset($tasks[0]);
-        $tasks = array_values($tasks);
         foreach ($tasks as $task) {
             if ($task->hours == 0) {
                 continue;
