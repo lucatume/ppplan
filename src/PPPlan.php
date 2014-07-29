@@ -120,8 +120,12 @@ class Ppplan
         if (!preg_match('/^(Y|y|yes|Yes)/', $answer)) {
             return;
         }
+        $fileName = readline($this->color("\nType the name of the file to save the list in (do not include file extension):\n"));
+        if (!$fileName) {
+            $fileName = 'todo_' . time();
+        }
         $cwd = getcwd();
-        $filePath = $cwd . DIRECTORY_SEPARATOR . 'todo_' . time() . '.txt';
+        $filePath = $cwd . DIRECTORY_SEPARATOR . $fileName . '.txt';
         if (file_put_contents($filePath, $list)) {
             echo $this->color("List written to the $filePath file.");
         }
