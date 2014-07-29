@@ -57,7 +57,7 @@ class Ppplan
     protected function askEstimationFor(Answer $answer, array & $answers)
     {
         if ($answer->hours > 0) {
-            echo $this->color("\nPrevious estimate to $answer->title is $answer->hours hours.", 'cyan');
+            echo $this->color(sprintf("\nPrevious estimate to %s is %s hour%s.", $answer->title, $answer->hours, Utils::getPluralSuffixFor($answer->hours)), 'cyan');
         }
         if ($answer->toEstimate) {
             $line = $this->color("\nHow long will it take to $answer->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
