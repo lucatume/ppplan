@@ -59,16 +59,6 @@ class PPPlan
     
     protected function askEstimationFor(Task $task, array & $tasks)
     {
-        if ($this->review and $task->hours > 0) {
-            echo $this->color("\nPrevious estimate to $task->title is $task->hours hours.", 'cyan');
-            if (!$this->headPrinted) {
-                echo "\n";
-                // remove the objective from the tasks
-                unset($tasks[0]);
-                $tasks = array_values($tasks);
-                $this->headPrinted = true;
-            }
-        }
         if ($task->toEstimate) {
             $line = $this->color("\nHow long will it take to $task->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
             $task->hours = floatval(readline($line));
@@ -105,7 +95,9 @@ class PPPlan
         $fileList = sprintf('Things to do to %s', $objective->title);
         $fileList.= "\n";
         $objective->totalHours = 0;
-        
+        // remove the objective from the tasks
+        unset($tasks[0]);
+        $tasks = array_values($tasks);
         foreach ($tasks as $task) {
             if ($task->hours == 0) {
                 continue;
