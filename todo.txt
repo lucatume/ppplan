@@ -1,3 +1,6 @@
 Things to do to create something
-	 do this (2 hrs)	 do that (3 hrs)
-that's a total estimate of 5 hours
+
+	- do this (est. 1 hr)
+	- do that (est. 2 hrs)
+
+that's a total estimate of 3 hours

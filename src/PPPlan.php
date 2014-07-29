@@ -27,7 +27,7 @@ class Ppplan {
 	}
 
 	protected function askEstimationFor( $answer, &$answers ) {
-		$answer->hours = floatval( readline( "How long will it take to $answer->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n" ) );
+		$answer->hours = floatval( readline( "\nHow long will it take to $answer->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n" ) );
 		if ( $answer->hours == 0 ) {
 			$answer->toEstimate = false;
 			$subAnswers         = $this->askDecomposeFor( $answer );
@@ -40,7 +40,7 @@ class Ppplan {
 	}
 
 	protected function askDecomposeFor( $answer ) {
-		$subAnswers = explode( ', ', readline( "Ok, what's needed to $answer->title?\n(Answer with a comma separated list)\n\n" ) );
+		$subAnswers = explode( ', ', readline( "\nOk, what's needed to $answer->title?\n(Answer with a comma separated list)\n\n" ) );
 
 		return $subAnswers;
 	}
@@ -62,7 +62,7 @@ class Ppplan {
 				continue;
 			}
 			$tabs = "\n\t";
-			$list .= sprintf( '%s- %s (%s hr%s)', $tabs, $answer->title, $answer->hours, Utils::getPluralSuffixFor( $answer->hours ) );
+			$list .= sprintf( '%s- %s (est. %s hr%s)', $tabs, $answer->title, $answer->hours, Utils::getPluralSuffixFor( $answer->hours ) );
 			$objective->totalHours += $answer->hours;
 		}
 		$list .= "\n\n";
@@ -80,7 +80,7 @@ class Ppplan {
 			return;
 		}
 		$cwd      = getcwd();
-		$filePath = $cwd . DIRECTORY_SEPARATOR . 'todo.txt';
+		$filePath = $cwd . DIRECTORY_SEPARATOR . 'todo_'.date().'.txt';
 		@file_put_contents( $filePath, $list );
 	}
 
