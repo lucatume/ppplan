@@ -5,7 +5,7 @@ namespace PPPlan;
 include 'vendor/autoload.php';
 
 $objective = new Objective();
-$answers = array();
+$tasks = array();
 $review = false;
 if (isset($argv[1])) {
     switch ($argv[1]) {
@@ -15,7 +15,7 @@ if (isset($argv[1])) {
                 $file = $argv[2];
                 $listReader = new ListReader($file);
                 $objective = $listReader->getObjective();
-                $answers = $listReader->getTodos();
+                $tasks = $listReader->getTodos();
             } else {
                 echo "Please provide a file to review.";
                 exit;
@@ -28,10 +28,10 @@ if (isset($argv[1])) {
 }
 
 $colors = new Colors();
-$ppplan = new Ppplan($colors, $review);
+$ppplan = new PPPlan($colors, $review);
 
 $ppplan->theHead($objective);
-$answers = $ppplan->theQuestions($objective, $answers, $review);
-$list = $ppplan->theResponse($objective, $answers);
+$tasks = $ppplan->theQuestions($objective, $tasks, $review);
+$list = $ppplan->theResponse($objective, $tasks);
 $ppplan->theSavingOptions($list);
 ?>
