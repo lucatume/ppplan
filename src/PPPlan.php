@@ -5,14 +5,32 @@ namespace PPPlan;
 
 class Ppplan {
 
-	public function __construct() {
+    protected $colors;
+    protected $lineColor = 'cyan';
+    protected $listLineColor = 'white';
+
+    public function __construct(Colors $colors)
+    {
+        $this->colors = $colors;
 	}
 
-	public function theHead( $objective ) {
-		$objective->title = readline( "What do you want to do?\n\n" );
+    protected function color($string)
+    {
+        return $this->colors->getColoredString($string, $this->lineColor);
+    }
+
+    protected function listColor($string)
+    {
+        return $this->colors->getColoredString($string, $this->listLineColor);
+    }
+
+    public function theHead(Objective $objective)
+    {
+        $objective->title = readline($this->color("What do you want to do?\n\n"));
 	}
 
-	public function theQuestions( $objective, $answers ) {
+    public function theQuestions(Objective $objective, array $answers)
+    {
 		$answers[0] = new Answer( $objective->title );
 		while ( $this->thereAreUnestimated( $answers ) ) {
 			foreach ( $answers as $answer ) {
@@ -26,8 +44,10 @@ class Ppplan {
 		return $answers;
 	}
 
-	protected function askEstimationFor( $answer, &$answers ) {
-		$answer->hours = floatval( readline( "\nHow long will it take to $answer->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n" ) );
+    protected function askEstimationFor(Answer $answer, array &$answers)
+    {
+        $line = $this->color("\nHow long will it take to $answer->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
+        $answer->hours = floatval(readline($line));
 		if ( $answer->hours == 0 ) {
 			$answer->toEstimate = false;
 			$subAnswers         = $this->askDecomposeFor( $answer );
@@ -39,13 +59,15 @@ class Ppplan {
 		}
 	}
 
-	protected function askDecomposeFor( $answer ) {
-		$subAnswers = explode( ', ', readline( "\nOk, what's needed to $answer->title?\n(Answer with a comma separated list)\n\n" ) );
+    protected function askDecomposeFor(Answer $answer)
+    {
+        $subAnswers = explode(', ', readline($this->color("\nOk, what's needed to $answer->title?\n(Answer with a comma separated list)\n\n")));
 
 		return $subAnswers;
 	}
 
-	protected function thereAreUnestimated( $answers ) {
+    protected function thereAreUnestimated(array $answers)
+    {
 		foreach ( $answers as $answer ) {
 			if ( $answer->toEstimate ) {
 				return true;
@@ -53,8 +75,9 @@ class Ppplan {
 		}
 	}
 
-	public function theResponse( $objective, $answers, $echo = true ) {
-		$list = sprintf( 'Things to do to %s', $objective->title );
+    public function theResponse(Objective $objective, array $answers, $echo = true)
+    {
+        $list = $this->listColor(sprintf('Things to do to %s', $objective->title));
 		$list .= "\n";
 		$objective->totalHours = 0;
 		foreach ( $answers as $answer ) {
@@ -62,11 +85,11 @@ class Ppplan {
 				continue;
 			}
 			$tabs = "\n\t";
-			$list .= sprintf( '%s- %s (est. %s hr%s)', $tabs, $answer->title, $answer->hours, Utils::getPluralSuffixFor( $answer->hours ) );
+            $list .= $this->listColor(sprintf('%s- %s (est. %s hr%s)', $tabs, $answer->title, $answer->hours, Utils::getPluralSuffixFor($answer->hours)));
 			$objective->totalHours += $answer->hours;
 		}
 		$list .= "\n\n";
-		$list .= sprintf( 'that\'s a total estimate of %s hour%s', $objective->totalHours, Utils::getPluralSuffixFor( $objective->totalHours ) );
+        $list .= $this->listColor(sprintf('that\'s a total estimate of %s hour%s', $objective->totalHours, Utils::getPluralSuffixFor($objective->totalHours)));
 		if ( $echo ) {
 			echo "\n" . $list . "\n\n";
 		}
@@ -75,12 +98,12 @@ class Ppplan {
 	}
 
 	public function theSavingOptions( $list ) {
-		$answer = readline( "Do you want to save the list to a file (y/n)? " );
+        $answer = readline($this->color("Do you want to save the list to a file (y/n)? "));
 		if ( ! preg_match( '/^(Y|y|yes|Yes)/', $answer ) ) {
 			return;
 		}
 		$cwd      = getcwd();
-		$filePath = $cwd . DIRECTORY_SEPARATOR . 'todo_'.date().'.txt';
+        $filePath = $cwd . DIRECTORY_SEPARATOR . 'todo_' . time() . '.txt';
 		@file_put_contents( $filePath, $list );
 	}
 

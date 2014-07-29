@@ -4,8 +4,9 @@ namespace PPPlan;
 
 include 'vendor/autoload.php';
 
-$ppplan = new Ppplan();
-$objective = new Objective;
+$colors = new Colors();
+$ppplan = new Ppplan($colors);
+$objective = new Objective();
 $answers = array();
 
 $ppplan->theHead($objective);
