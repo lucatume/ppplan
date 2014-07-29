@@ -26,28 +26,37 @@ class Ppplan {
 
     public function theHead(Objective $objective)
     {
-        $objective->title = readline($this->color("What do you want to do?\n\n"));
+        if ($objective->title != '') {
+            echo $this->color(sprintf('Reviewing the things to do to %s', $objective->title));
+        } else {
+            $objective->title = readline($this->color("What do you want to do?\n\n"));
+        }
 	}
 
     public function theQuestions(Objective $objective, array $answers)
     {
-		$answers[0] = new Answer( $objective->title );
-		while ( $this->thereAreUnestimated( $answers ) ) {
+        $answers[0] = new Answer($objective->title, $objective->totalHours, false);
+        while ($this->thereAreUnestimated($answers)) {
 			foreach ( $answers as $answer ) {
-				if ( $answer->hours > 0 or ! $answer->toEstimate ) {
+                if (!$answer->toEstimate and $answer->hours == 0) {
 					continue;
 				}
 				$this->askEstimationFor( $answer, $answers );
 			}
-		}
+        }
 
 		return $answers;
 	}
 
     protected function askEstimationFor(Answer $answer, array &$answers)
     {
-        $line = $this->color("\nHow long will it take to $answer->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
-        $answer->hours = floatval(readline($line));
+        if ($answer->hours > 0) {
+            echo $this->color("\nPrevious estimate to $answer->title is $answer->hours hours.", 'cyan');
+        }
+        if ($answer->toEstimate) {
+            $line = $this->color("\nHow long will it take to $answer->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
+            $answer->hours = floatval(readline($line));
+        }
 		if ( $answer->hours == 0 ) {
 			$answer->toEstimate = false;
 			$subAnswers         = $this->askDecomposeFor( $answer );
@@ -80,6 +89,9 @@ class Ppplan {
         $list = $this->listColor(sprintf('Things to do to %s', $objective->title));
 		$list .= "\n";
 		$objective->totalHours = 0;
+        // remove the objective from the answers
+        unset ($answers[0]);
+        $answers = array_values($answers);
 		foreach ( $answers as $answer ) {
 			if ( $answer->hours == 0 ) {
 				continue;

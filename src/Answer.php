@@ -9,10 +9,10 @@ class Answer
     public $hours;
     public $toEstimate;
     
-    public function __construct($title)
+    public function __construct($title, $hours = 0, $toEstimate = true)
     {
         $this->title = $title;
-        $this->hours = 0;
-        $this->toEstimate = true;
+        $this->hours = $hours;
+        $this->toEstimate = $toEstimate;
     }
 }
