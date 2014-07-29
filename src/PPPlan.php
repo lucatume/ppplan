@@ -27,7 +27,8 @@ class Ppplan {
     public function theHead(Objective $objective)
     {
         if ($objective->title != '') {
-            echo $this->color(sprintf('Reviewing the things to do to %s', $objective->title));
+            $line = sprintf('Reviewing the things to do to %s', $objective->title);
+            echo $this->color($line);
         } else {
             $objective->title = readline($this->color("What do you want to do?\n\n"));
         }
@@ -51,7 +52,7 @@ class Ppplan {
     protected function askEstimationFor(Answer $answer, array &$answers)
     {
         if ($answer->hours > 0) {
-            echo $this->color("\nPrevious estimate to $answer->title is $answer->hours hours.", 'cyan');
+            echo $this->color("\n\nPrevious estimate to $answer->title is $answer->hours hours.", 'cyan');
         }
         if ($answer->toEstimate) {
             $line = $this->color("\nHow long will it take to $answer->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
