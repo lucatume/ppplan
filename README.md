@@ -13,6 +13,12 @@ If you want to later review the list of answers and break them down even further
 
     php ppplan.php review some_list.txt
 
+To be able to launch the script from the command line, once the file has been downloaded browse to the folder containing the script and type
+
+    cp ./ppplan.php /usr/bin/ppplan
+
+<code>sudo</code> authentication might be requested.
+
 ## Changelog
 0.3.0 - added the possibility to review previously created lists
 0.2.0 - colored the output and refactored the code  
