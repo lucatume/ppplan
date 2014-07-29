@@ -6,7 +6,7 @@ namespace PPPlan;
 class Ppplan {
 
     protected $colors;
-    protected $lineColor = 'cyan';
+    protected $lineColor = 'green';
     protected $listLineColor = 'white';
 
     public function __construct(Colors $colors)
