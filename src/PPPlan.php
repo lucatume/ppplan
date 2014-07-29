@@ -65,9 +65,9 @@ class PPPlan
         }
         if ($task->hours == 0) {
             $task->toEstimate = false;
-            $subAnswers = $this->askDecomposeFor($task);
-            foreach ($subAnswers as $subAnswer) {
-                $tasks[] = new Task($subAnswer);
+            $subTasks = $this->askDecomposeFor($task);
+            foreach ($subTasks as $subTask) {
+                $tasks[] = new Task($subTask);
             }
         } else {
             $task->toEstimate = false;
@@ -76,9 +76,9 @@ class PPPlan
     
     protected function askDecomposeFor(Task $task)
     {
-        $subAnswers = explode(', ', readline($this->color("\nOk, what's needed to $task->title?\n(Task with a comma separated list)\n\n")));
+        $subTasks = explode(', ', readline($this->color("\nOk, what's needed to $task->title?\n(Task with a comma separated list)\n\n")));
         
-        return $subAnswers;
+        return $subTasks;
     }
     
     protected function thereAreUnestimated(array $tasks)
