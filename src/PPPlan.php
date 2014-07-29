@@ -7,12 +7,14 @@ class Ppplan
 {
     
     protected $colors;
+    protected $review;
     protected $lineColor = 'green';
     protected $listLineColor = 'white';
     
-    public function __construct(Colors $colors)
+    public function __construct(Colors $colors, $review = false)
     {
         $this->colors = $colors;
+        $this->review = $review;
     }
     
     protected function color($string)
@@ -27,7 +29,7 @@ class Ppplan
     
     public function theHead(Objective $objective)
     {
-        if ($objective->title != '') {
+        if ($this->review) {
             $line = sprintf('Reviewing the things to do to %s', $objective->title);
             echo $this->color($line);
         } else {
