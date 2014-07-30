@@ -11,12 +11,14 @@ class PPPlan
     protected $lineColor = 'cyan';
     protected $listLineColor = 'white';
     protected $headPrinted;
-    
-    public function __construct(Colors $colors, $review = false)
+    protected $options;
+
+    public function __construct(Colors $colors, $review = false, $options)
     {
         $this->colors = $colors;
         $this->review = $review;
         $this->headPrinted = false;
+        $this->options = $options;
     }
     
     protected function color($string)
@@ -31,10 +33,14 @@ class PPPlan
     
     public function theHead(Objective $objective)
     {
+        $this->maybeClear();
         if ($this->review) {
-            $line = sprintf('Reviewing the things to do to %s', $objective->title);
+            $line = sprintf('Review the things to do to %s (y/n)? ', $objective->title);
             echo "\n" . $this->color($line);
             echo "\n" . $this->color(preg_replace('/./', '-', $line)) . "\n";
+            if (!preg_match('/^(Y|y).*/', readline())) {
+                exit;
+            }
         } else {
             $objective->title = readline($this->color("What do you want to do?\n\n"));
         }
@@ -59,8 +65,10 @@ class PPPlan
     
     protected function askEstimationFor(Task $task, array & $tasks)
     {
+        $this->maybeClear();
         if ($task->toEstimate) {
-            $line = $this->color("\nHow long will it take to $task->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
+            $this->maybeNewline();
+            $line = $this->color("How long will it take to $task->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
             $task->hours = floatval(readline($line));
         }
         if ($task->hours == 0) {
@@ -76,8 +84,9 @@ class PPPlan
     
     protected function askDecomposeFor(Task $task)
     {
-        $subTasks = explode(', ', readline($this->color("\nOk, what's needed to $task->title?\n(Task with a comma separated list)\n\n")));
-        
+        $this->maybeClear();
+        $this->maybeNewline();
+        $subTasks = explode(', ', readline($this->color("Ok, what's needed to $task->title?\n(Task with a comma separated list)\n\n")));
         return $subTasks;
     }
     
@@ -92,6 +101,8 @@ class PPPlan
     
     public function theResponse(Objective $objective, array $tasks, $echo = true)
     {
+        $this->maybeClear();
+        $this->maybeNewline();
         $fileList = sprintf('Things to do to %s', $objective->title);
         $fileList.= "\n";
         $objective->totalHours = 0;
@@ -129,6 +140,20 @@ class PPPlan
         $filePath = $cwd . DIRECTORY_SEPARATOR . $fileName . '.txt';
         if (file_put_contents($filePath, $list)) {
             echo $this->color("List written to the $filePath file.");
+        }
+    }
+
+    protected function maybeClear()
+    {
+        if ($this->options->clearMode) {
+            System::clear();
+        }
+    }
+
+    protected function maybeNewline()
+    {
+        if (!$this->options->clearMode) {
+            echo "\n";
         }
     }
 }
