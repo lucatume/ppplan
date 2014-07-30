@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 
 namespace PPPlan;
@@ -27,12 +28,14 @@ if (isset($argv[1])) {
             break;
     }
 }
+$options = new \stdClass();
+$options->clearMode = in_array('--clear', $argv) ? true : false;
 
 $colors = new Colors();
-$ppplan = new PPPlan($colors, $review);
+$ppplan = new PPPlan($colors, $review, $options);
 
 $ppplan->theHead($objective);
 $tasks = $ppplan->theQuestions($objective, $tasks, $review);
 $list = $ppplan->theResponse($objective, $tasks);
 $ppplan->theSavingOptions($list);
-
+?>

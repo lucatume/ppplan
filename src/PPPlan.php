@@ -11,12 +11,14 @@ class PPPlan
     protected $lineColor = 'cyan';
     protected $listLineColor = 'white';
     protected $headPrinted;
-    
-    public function __construct(Colors $colors, $review = false)
+    protected $options;
+
+    public function __construct(Colors $colors, $review = false, $options)
     {
         $this->colors = $colors;
         $this->review = $review;
         $this->headPrinted = false;
+        $this->options = $options;
     }
     
     protected function color($string)
@@ -31,10 +33,14 @@ class PPPlan
     
     public function theHead(Objective $objective)
     {
-        if ($objective->title != '') {
-            $line = sprintf('Reviewing the things to do to %s', $objective->title);
+        $this->maybeClear();
+        if ($this->review) {
+            $line = sprintf('Review the things to do to %s (y/n)? ', $objective->title);
             echo "\n" . $this->color($line);
             echo "\n" . $this->color(preg_replace('/./', '-', $line)) . "\n";
+            if (!preg_match('/^(Y|y).*/', readline())) {
+                exit;
+            }
         } else {
             $objective->title = readline($this->color("What do you want to do?\n\n"));
         }
@@ -59,18 +65,10 @@ class PPPlan
     
     protected function askEstimationFor(Task $task, array & $tasks)
     {
-        if ($this->review and $task->hours > 0) {
-            echo $this->color("\nPrevious estimate to $task->title is $task->hours hours.", 'cyan');
-            if (!$this->headPrinted) {
-                echo "\n";
-                // remove the objective from the tasks
-                unset($tasks[0]);
-                $tasks = array_values($tasks);
-                $this->headPrinted = true;
-            }
-        }
+        $this->maybeClear();
         if ($task->toEstimate) {
-            $line = $this->color("\nHow long will it take to $task->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
+            $this->maybeNewline();
+            $line = $this->color("How long will it take to $task->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
             $task->hours = floatval(readline($line));
         }
         if ($task->hours == 0) {
@@ -86,8 +84,9 @@ class PPPlan
     
     protected function askDecomposeFor(Task $task)
     {
-        $subTasks = explode(', ', readline($this->color("\nOk, what's needed to $task->title?\n(Task with a comma separated list)\n\n")));
-        
+        $this->maybeClear();
+        $this->maybeNewline();
+        $subTasks = explode(', ', readline($this->color("Ok, what's needed to $task->title?\n(Task with a comma separated list)\n\n")));
         return $subTasks;
     }
     
@@ -102,10 +101,14 @@ class PPPlan
     
     public function theResponse(Objective $objective, array $tasks, $echo = true)
     {
+        $this->maybeClear();
+        $this->maybeNewline();
         $fileList = sprintf('Things to do to %s', $objective->title);
         $fileList.= "\n";
         $objective->totalHours = 0;
-        
+        // remove the objective from the tasks
+        unset($tasks[0]);
+        $tasks = array_values($tasks);
         foreach ($tasks as $task) {
             if ($task->hours == 0) {
                 continue;
@@ -129,10 +132,28 @@ class PPPlan
         if (!preg_match('/^(Y|y|yes|Yes)/', $task)) {
             return;
         }
+        $fileName = readline($this->color("\nType the name of the file to save the list in (do not include file extension):\n"));
+        if (!$fileName) {
+            $fileName = 'todo_' . time();
+        }
         $cwd = getcwd();
-        $filePath = $cwd . DIRECTORY_SEPARATOR . 'todo_' . time() . '.txt';
+        $filePath = $cwd . DIRECTORY_SEPARATOR . $fileName . '.txt';
         if (file_put_contents($filePath, $list)) {
             echo $this->color("List written to the $filePath file.");
+        }
+    }
+
+    protected function maybeClear()
+    {
+        if ($this->options->clearMode) {
+            System::clear();
+        }
+    }
+
+    protected function maybeNewline()
+    {
+        if (!$this->options->clearMode) {
+            echo "\n";
         }
     }
 }
