@@ -32,7 +32,8 @@ $options = new \stdClass();
 $options->clearMode = in_array('--clear', $argv) ? true : false;
 
 $colors = new Colors();
-$ppplan = new PPPlan($colors, $review, $options);
+$hourReader = new HourReader($options);
+$ppplan = new PPPlan($colors, $hourReader, $review, $options);
 
 $ppplan->theHead($objective);
 $tasks = $ppplan->theQuestions($objective, $tasks, $review);
