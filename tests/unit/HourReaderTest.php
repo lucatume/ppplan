@@ -72,6 +72,15 @@ class HourReaderTest extends \PHPUnit_Framework_TestCase
             array('4.5p', round(4.5*25/60, 2))
         );
     }
+    public function weeksProvider(){
+        return array(
+            // 24 hours a day, 7 days a week
+            array('1w', 24*7),
+            array('1 w', 24*7),
+            array('1week', 24*7),
+            array('1 week', 24*7)
+        );
+    }
     /**
      * @test
      * it should read minutes properly
@@ -123,6 +132,15 @@ class HourReaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * it should properly read week values
+     * @dataProvider weeksProvider
+     */
+    public function it_should_properly_read_week_values($answer, $hours)
+    {
+        $this->assertEquals($hours, $this->sut->getHoursFrom($answer));
+    }
+    /**
+     * @test
      * it should allow setting the pomodoro duration
      */
     public function it_should_allow_setting_the_pomodoro_duration()
@@ -138,9 +156,23 @@ class HourReaderTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_the_day_duration()
     {
-        // 'day' is 'working 'day'
         $this->sut->setDayDuration(10);
         $this->assertEquals(10, $this->sut->getHoursFrom('1d'));
         $this->assertEquals(40, $this->sut->getHoursFrom('4d'));
+    }
+
+    /**
+     * @test
+     * it should allow setting the week duration
+     */
+    public function it_should_allow_setting_the_week_duration()
+    {
+        // 10 hrs a day, 5 days a week
+        $this->sut->setWeekDuration(5);
+        $this->sut->setDayDuration(10);
+        $this->assertEquals(10*5, $this->sut->getHoursFrom('1w'));
+        $this->sut->setWeekDuration(7);
+        $this->sut->setDayDuration(24);
+        $this->assertEquals(24*7*2, $this->sut->getHoursFrom('2w'));
     }
 }
