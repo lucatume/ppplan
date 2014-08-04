@@ -5,17 +5,17 @@ namespace PPPlan;
 
 class HourReader
 {
-    protected $pomodoroDuration = 25;
-    protected $dayDuration = 24;
-    protected $weekDuration = 7;
+    protected $pomodoroDuration;
+    protected $dayDuration;
+    protected $weekDuration;
     protected $options = null;
 
     public function __construct($options = null)
     {
         $this->options = is_null($options) ? new \stdClass() : $options;
-        $this->options->dayDuration = isset($this->options->dayDuration) ? $this->options->dayDuration : 24;
-        $this->options->weekDuration = isset($this->options->weekDuration) ? $this->options->weekDuration : 7;
-        $this->options->pomodoroDuration= isset($this->options->pomodoroDuration) ? $this->options->pomodoroDuration : 25;
+        $this->dayDuration = isset($this->options->dayDuration) ? floatval($this->options->dayDuration) : 24;
+        $this->weekDuration = isset($this->options->weekDuration) ? floatval($this->options->weekDuration) : 7;
+        $this->pomodoroDuration = isset($this->options->pomodoroDuration) ? floatval($this->options->pomodoroDuration) : 25;
     }
 
     public function getHoursFrom($answer)

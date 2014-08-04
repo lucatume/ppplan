@@ -25,4 +25,18 @@ class OptionReader
         }
         return $options;
     }
+    public function getDefaults()
+    {
+        $defaultOptions = array();
+        $defaultsFile = posix_getpwuid(posix_getuid());
+        $defaultsFile = $defaultsFile['dir'] . '/.ppplan';
+        if (file_exists($defaultsFile)) {
+            $defaults = @file_get_contents($defaultsFile);
+            $defaultOptions = explode(' ', $defaults);
+            $defaultOptions = array_map('trim', $defaultOptions);
+            $defaultOptions = $this->getOptionsFrom($defaultOptions);
+            return $defaultOptions;
+        }
+        return $defaultOptions;
+    }
 }

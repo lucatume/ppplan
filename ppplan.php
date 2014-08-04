@@ -28,8 +28,10 @@ if (isset($argv[1])) {
             break;
     }
 }
-$options = new \stdClass();
-$options->clearMode = in_array('--clear', $argv) ? true : false;
+$optionReader = new OptionReader();
+$defaultOptions = $optionReader->getDefaults();
+$options = $optionReader->getOptionsFrom($argv);
+$options = (object)array_merge((array)$defaultOptions, (array)$options);
 
 $colors = new Colors();
 $hourReader = new HourReader($options);
