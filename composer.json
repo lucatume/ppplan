@@ -10,7 +10,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-
+        "codeception/codeception": "*"
     },
 	"autoload": {
 		"psr-4":{

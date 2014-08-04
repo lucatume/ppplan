@@ -66,11 +66,13 @@ class PPPlan
     protected function askEstimationFor(Task $task, array & $tasks)
     {
         $this->maybeClear();
+        $answer = '';
         if ($task->toEstimate) {
             $this->maybeNewline();
             $line = $this->color("How long will it take to $task->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
-            $task->hours = floatval(readline($line));
+            $answer = floatval(readline($line));
         }
+        $task->hours = HourReader::getHoursFrom($answer);
         if ($task->hours == 0) {
             $task->toEstimate = false;
             $subTasks = $this->askDecomposeFor($task);

@@ -1,3 +1,5 @@
 /vendor/
 !/vendor/autoload.php
 todo*
+
+tests/_output/*
