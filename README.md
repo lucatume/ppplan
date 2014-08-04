@@ -19,7 +19,7 @@ For a more focused interaction with the script use the <code>--clear</code> opti
 
     php ppplan.php --clear
 
-### day, week and pomodoro duration
+### Day, week and pomodoro duration
 PPPlan will understand natural language task durations like `1w` or `3p` to specify a task duration estimation and will allow specifying durations usind options too; by defaults **a day is 24 hours long, a week is 7 days long and a pomodoro is 25 minutes long**.  
 Using the `--day`, `--week` and `--pomodoro` options like
 
