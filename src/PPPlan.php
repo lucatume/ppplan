@@ -72,7 +72,7 @@ class PPPlan
         if ($task->toEstimate) {
             $this->maybeNewline();
             $line = $this->color("How long will it take to $task->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
-            $answer = floatval(readline($line));
+            $answer = readline($line);
         }
         $task->hours = $this->hourReader->getHoursFrom($answer);
         if ($task->hours == 0) {
@@ -149,7 +149,7 @@ class PPPlan
 
     protected function maybeClear()
     {
-        if ($this->options->clearMode) {
+        if ($this->options->clear) {
             System::clear();
         }
     }
