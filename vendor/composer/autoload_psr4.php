@@ -7,4 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'PPPlan\\' => array($baseDir . '/src'),
+    'GuzzleHttp\\Stream\\' => array($vendorDir . '/guzzlehttp/streams/src'),
+    'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
 );

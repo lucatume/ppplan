@@ -8,9 +8,8 @@ class OptionReader
     public function getOptionsFrom($args)
     {
         $options = new \stdClass();
-        $catchValue = false;
         for ($i = 0; $i < count($args); $i++) {
-            if (!preg_match('/^--/', $args[$i]) and !$catchValue) {
+            if (!preg_match('/^--/', $args[$i])) {
                 continue;
             } else {
                 // it's an option key
