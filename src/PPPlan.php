@@ -7,15 +7,17 @@ class PPPlan
 {
     
     protected $colors;
+    protected $hourReader;
     protected $review;
     protected $lineColor = 'cyan';
     protected $listLineColor = 'white';
     protected $headPrinted;
     protected $options;
 
-    public function __construct(Colors $colors, $review = false, $options)
+    public function __construct(Colors $colors, HourReader $hourReader, $review = false, $options)
     {
         $this->colors = $colors;
+        $this->hourReader = $hourReader;
         $this->review = $review;
         $this->headPrinted = false;
         $this->options = $options;
@@ -72,7 +74,7 @@ class PPPlan
             $line = $this->color("How long will it take to $task->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
             $answer = floatval(readline($line));
         }
-        $task->hours = HourReader::getHoursFrom($answer);
+        $task->hours = $this->hourReader->getHoursFrom($answer);
         if ($task->hours == 0) {
             $task->toEstimate = false;
             $subTasks = $this->askDecomposeFor($task);

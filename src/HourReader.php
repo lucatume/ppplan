@@ -7,8 +7,16 @@ class HourReader
 {
     protected $pomodoroDuration = 25;
     protected $dayDuration = 24;
+    protected $options = null;
 
-    public function _getHoursFrom($answer)
+    public function __construct($options = null)
+    {
+        $this->options = is_null($options) ? new \stdClass() : $options;
+        $this->options->dayDuration = isset($this->options->dayDuration) ? $this->options->dayDuration : 24;
+        $this->options->pomodoroDuration= isset($this->options->pomodoroDuration) ? $this->options->pomodoroDuration : 25;
+    }
+
+    public function getHoursFrom($answer)
     {
         $base = 1;
         if (preg_match('/^[0-9]*\.?[0-9]+\s*m/', $answer)) {
