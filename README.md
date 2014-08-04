@@ -23,10 +23,17 @@ For a more focused interaction with the script use the <code>--clear</code> opti
 PPPlan will understand natural language task durations like `1w` or `3p` to specify a task duration estimation and will allow specifying durations usind options too; by defaults **a day is 24 hours long, a week is 7 days long and a pomodoro is 25 minutes long**.  
 Using the `--day`, `--week` and `--pomodoro` options like
 
-    ppplan --day 8 --week 5 --pomodoro 50
+    ppplan --dayDuration 8 --weekDuration 5 --pomodoroDuration 50
 
-I'm specifying that `1 day` means 8 hours, `1 week` means 5 days and `1 pomodoro` means 50 minutes. 
+I'm specifying that `1 day` means 8 hours, `1 week` means 5 days and `1 pomodoro` means 50 minutes.  
 
+## Persisting options
+To allow for a more streamlined use of the script the command arguments that should be input on each script call can be saved to the `~/.ppplan` file to have them read and used on each `ppplan` call. Run time options will override the ones set in the file though. The file format is the same as the command line options hence, to persist the options about day, week and pomodoro duration, I could type something like
+    
+    echo "--dayDuration 8 --weekDuration 5 --pomodoroDuration 50" >> ~/.ppplan
+    ppplan
+    
+To allow for 
 ### Review
 If you want to later review the list of answers and break them down even further then use the <code>review</code> option provided by the script like
 
@@ -39,7 +46,7 @@ To be able to launch the script from the command line, once the file has been do
 <code>sudo</code> authentication might be requested.
 
 ## Changelog
-0.5.0 - added the possibility to enter durations in minutes, hours,days, weeks and pomodoros
+0.5.0 - added the possibility to enter durations in minutes, hours,days, weeks and pomodoros and persist options
 0.4.0 - refactoring and added the clear mode
 0.3.0 - added the possibility to review previously created lists
 0.2.0 - colored the output and refactored the code  
