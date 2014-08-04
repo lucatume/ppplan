@@ -79,7 +79,7 @@ class HourReaderTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_read_minutes_properly($answer,$hours)
     {
-        $this->assertEquals($hours, $this->sut->_getHoursFrom($answer));
+        $this->assertEquals($hours, $this->sut->getHoursFrom($answer));
     }
 
     /**
@@ -89,7 +89,7 @@ class HourReaderTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_read_hours_properly($answer, $hours)
     {
-        $this->assertEquals($hours, $this->sut->_getHoursFrom($answer));
+        $this->assertEquals($hours, $this->sut->getHoursFrom($answer));
     }
 
     /**
@@ -98,7 +98,7 @@ class HourReaderTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_read_non_specified_time_base_as_hours()
     {
-        $this->assertEquals(3, $this->sut->_getHoursFrom('3'));
+        $this->assertEquals(3, $this->sut->getHoursFrom('3'));
     }
 
     /**
@@ -108,7 +108,7 @@ class HourReaderTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_read_days_properly($answer, $hours)
     {
-        $this->assertEquals($hours, $this->sut->_getHoursFrom($answer));
+        $this->assertEquals($hours, $this->sut->getHoursFrom($answer));
     }
 
     /**
@@ -118,7 +118,7 @@ class HourReaderTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_properly_read_pomodoro_values($answer, $hours)
     {
-        $this->assertEquals($hours, $this->sut->_getHoursFrom($answer));
+        $this->assertEquals($hours, $this->sut->getHoursFrom($answer));
     }
 
     /**
@@ -128,8 +128,8 @@ class HourReaderTest extends \PHPUnit_Framework_TestCase
     public function it_should_allow_setting_the_pomodoro_duration()
     {
         $this->sut->setPomodoroDuration(50);
-        $this->assertEquals(round(50/60,2), $this->sut->_getHoursFrom('1p'));
-        $this->assertEquals(round(4*50/60,2), $this->sut->_getHoursFrom('4p'));
+        $this->assertEquals(round(50/60,2), $this->sut->getHoursFrom('1p'));
+        $this->assertEquals(round(4*50/60,2), $this->sut->getHoursFrom('4p'));
     }
 
     /**
@@ -140,7 +140,7 @@ class HourReaderTest extends \PHPUnit_Framework_TestCase
     {
         // 'day' is 'working 'day'
         $this->sut->setDayDuration(10);
-        $this->assertEquals(10, $this->sut->_getHoursFrom('1d'));
-        $this->assertEquals(40, $this->sut->_getHoursFrom('4d'));
+        $this->assertEquals(10, $this->sut->getHoursFrom('1d'));
+        $this->assertEquals(40, $this->sut->getHoursFrom('4d'));
     }
 }
