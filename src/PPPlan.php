@@ -92,7 +92,7 @@ class PPPlan
     {
         $this->maybeClear();
         $this->maybeNewline();
-        $subTasks = explode(', ', readline($this->color("Ok, what's needed to $task->title?\n(Task with a comma separated list)\n\n")));
+        $subTasks = explode(', ', readline($this->color("Ok, what's needed to $task->title?\n(Tasks in a comma separated list)\n\n")));
         return $subTasks;
     }
     
