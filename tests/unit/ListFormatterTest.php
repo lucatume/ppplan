@@ -67,7 +67,7 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
         $objective = new Objective('do something', 5);
         $sut = new ListFormatter('taskpaper');
         $line = $sut->formatHead($objective);
-        $this->assertEquals("Do something: @est(5)\n", $line);
+        $this->assertEquals("Do something: @est(5)", $line);
     }
     
     /**
@@ -132,7 +132,7 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
             $task1,
             $task2
         ));
-        $expected = "Do something: @est(2.8)\n\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
+        $expected = "Do something: @est(2.8)\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
         $this->assertEquals($expected, $actual);
     }
         /**
@@ -152,4 +152,22 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
         $expected = "Things to do to do something:\n\n\t- do task one (est. 1.5 hrs)\n\t- do task two (est. 1.3 hrs)\n\nThat's a total estimate of 2.8 hours.";
         $this->assertEquals($expected, $actual);
         }
+            /**
+             * @test
+             * it should allow overriding the format setting the  format property
+             */
+            public function it_should_allow_overriding_the_format_setting_the_format_property()
+            {
+        $objective = new Objective('do something', 2.8);
+        $task1 = new Task('do task one', 1.5, false);
+        $task2 = new Task('do task two', 1.3, false);
+        $sut = new ListFormatter('txt');
+                $sut->setFormat('taskpaper');
+        $actual = $sut->formatList($objective, array(
+            $task1,
+            $task2
+        ));
+        $expected = "Do something: @est(2.8)\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
+        $this->assertEquals($expected, $actual);
+            }
 }

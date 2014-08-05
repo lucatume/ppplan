@@ -13,7 +13,7 @@ class ListFormatter
     
     public function __construct($format = null)
     {
-        $this->format = ($format and in_array($format, $this->legitFormats)) ? $format : 'txt';
+        $this->setFormat($format);
     }
     public function formatLine(Task $task)
     {
@@ -45,7 +45,7 @@ class ListFormatter
         $newlinesAfterHead = "\n";
         switch ($this->format) {
             case 'taskpaper':
-                $out = sprintf('%s: @est(%s)%s', ucfirst($objective->title) , $objective->totalHours, $newlinesAfterHead);
+                $out = sprintf('%s: @est(%s)', ucfirst($objective->title) , $objective->totalHours);
                 break;
 
             default:
@@ -68,5 +68,9 @@ class ListFormatter
                 break;
         }
         return $out;
+    }
+    public function setFormat($format)
+    {
+        $this->format = ($format and in_array($format, $this->legitFormats)) ? $format : 'txt';
     }
 }
