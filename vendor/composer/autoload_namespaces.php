@@ -15,5 +15,5 @@ return array(
     'Symfony\\Component\\BrowserKit\\' => array($vendorDir . '/symfony/browser-kit'),
     'LazyMap\\' => array($vendorDir . '/ocramius/lazy-map/src'),
     'Instantiator\\' => array($vendorDir . '/ocramius/instantiator/src'),
-    'Codeception' => array($vendorDir . '/codeception/codeception/src'),
+    'Codeception' => array($vendorDir . '/codeception/remote-debug/src', $vendorDir . '/codeception/codeception/src'),
 );

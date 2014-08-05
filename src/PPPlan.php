@@ -109,15 +109,7 @@ class PPPlan
     {
         $this->maybeClear();
         $this->maybeNewline();
-        
-        // remove the first task from the list as it is the objective
-        array_shift($tasks);
-        $totalHours = 0;
-        array_map(function ($task) use (&$totalHours)
-        {
-            $totalHours = + $task->hours;
-        }
-        , $tasks);
+        list($tasks, $totalHours) = $this->setObjective($tasks);
         $objective->totalHours = $totalHours;
         $fileList = $this->listFormatter->formatList($objective, $tasks);
         if ($echo) {
@@ -138,9 +130,17 @@ class PPPlan
             $fileName = 'todo_' . time();
         }
         $cwd = getcwd();
-        
-        $format = (isset($this->options->format) and $this->options->format == 'taskpaper') ? 'taskpaper' : 'txt';
+        $format = '';
+        if (!isset($this->options->format)) {
+            $line = "File format (taskpaper/txt)?\n";
+            $format = readline($this->color($line));
+        } else {
+            $format = $this->options->format;
+        }
+        $format = Formats::getValidFormatFor($format);
         $filePath = $cwd . DIRECTORY_SEPARATOR . $fileName . '.' . $format;
+        $this->listFormatter->setFormat($format);
+        list($tasks, $totalHours) = $this->setObjective($tasks);
         $list = $this->listFormatter->formatList($objective, $tasks);
         if (file_put_contents($filePath, $list)) {
             echo $this->color("List written to the $filePath file.");
@@ -159,5 +159,16 @@ class PPPlan
         if (!isset($this->options->clear) or !$this->options->clear) {
             echo "\n";
         }
+    }
+
+    protected function setObjective(array $tasks)
+    {
+        array_shift($tasks);
+        $totalHours = 0;
+        array_map(function ($task) use (&$totalHours) {
+                $totalHours += $task->hours;
+            }
+            , $tasks);
+        return array($tasks, $totalHours);
     }
 }
