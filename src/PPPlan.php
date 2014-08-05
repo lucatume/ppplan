@@ -14,7 +14,7 @@ class PPPlan
     protected $listLineColor = 'white';
     protected $headPrinted;
     protected $options;
-
+    
     public function __construct(Colors $colors, HourReader $hourReader, ListFormatter $listFormatter, $review = false, $options)
     {
         $this->colors = $colors;
@@ -128,26 +128,26 @@ class PPPlan
             $fileName = 'todo_' . time();
         }
         $cwd = getcwd();
-        $format = $this->options->outputFormat and $this->options->outputFormat == 'taskpaper' ? 'taskpaper' : 'txt';
+        
+        $format = (isset($this->options->format) and $this->options->format == 'taskpaper') ? 'taskpaper' : 'txt';
         $filePath = $cwd . DIRECTORY_SEPARATOR . $fileName . '.' . $format;
-        $list = $this->listFormatter = createListFrom($objective, $tasks, $format);
+        $list = $this->listFormatter->formatList($objective, $tasks);
         if (file_put_contents($filePath, $list)) {
             echo $this->color("List written to the $filePath file.");
         }
     }
-
+    
     protected function maybeClear()
     {
-        if ($this->options->clear) {
+        if (isset($this->options->clear) and $this->options->clear) {
             System::clear();
         }
     }
-
+    
     protected function maybeNewline()
     {
-        if (!$this->options->clearMode) {
+        if (!isset($this->options->clear) or !$this->options->clear) {
             echo "\n";
         }
     }
-
 }

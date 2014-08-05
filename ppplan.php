@@ -35,7 +35,8 @@ $options = (object)array_merge((array)$defaultOptions, (array)$options);
 
 $colors = new Colors();
 $hourReader = new HourReader($options);
-$listFormatter = new $ListFormatter($options->format);
+$format = isset($options->format) ? $options->format : 'txt';
+$listFormatter = new ListFormatter($format);
 $ppplan = new PPPlan($colors, $hourReader, $listFormatter, $review, $options);
 
 $ppplan->theHead($objective);
