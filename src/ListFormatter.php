@@ -30,31 +30,19 @@ class ListFormatter
         }
         return $out;
     }
-    public function createListFrom(Objective $objective, array $tasks, $format = 'txt')
+    public function formatList(Objective $objective, array $tasks)
     {
-        $fileList = sprintf('Things to do to %s', $objective->title);
-        $fileList.= "\n";
-        $objective->totalHours = 0;
-        
-        // remove the objective from the tasks
-        unset($tasks[0]);
-        $tasks = array_values($tasks);
+        $list = $this->formatHead($objective);
         foreach ($tasks as $task) {
-            if ($task->hours == 0) {
-                continue;
-            }
-            $tabs = "\n\t";
-            $fileList.= sprintf('%s- %s (est. %s hr%s)', $tabs, $task->title, $task->hours, Utils::getPluralSuffixFor($task->hours));
-            $objective->totalHours+= $task->hours;
+            $list.= "\n" . $this->formatLine($task);
         }
-        $fileList.= "\n\n";
-        $fileList.= sprintf('that\'s a total estimate of %s hour%s', $objective->totalHours, Utils::getPluralSuffixFor($objective->totalHours));
-        return $fileList;
+        $list.= $this->formatFoot($objective);
+        return $list;
     }
     public function formatHead(Objective $objective)
     {
         $out = '';
-        $newlinesAfterHead = "\n\n";
+        $newlinesAfterHead = "\n";
         switch ($this->format) {
             case 'taskpaper':
                 $out = sprintf('%s: @est(%s)%s', ucfirst($objective->title) , $objective->totalHours, $newlinesAfterHead);
@@ -69,14 +57,14 @@ class ListFormatter
     public function formatFoot(Objective $objective)
     {
         $out = '';
-        $beforeHead = "\n";
+        $beforeFoot = "\n\n";
         switch ($this->format) {
             case 'taskpaper':
                 $out = '';
                 break;
 
             default:
-                $out = sprintf('%sThat\'s a total estimate of %s hour%s.', $beforeHead, $objective->totalHours, Utils::getPluralSuffixFor($objective->totalHours));
+                $out = sprintf('%sThat\'s a total estimate of %s hour%s.', $beforeFoot, $objective->totalHours, Utils::getPluralSuffixFor($objective->totalHours));
                 break;
         }
         return $out;
