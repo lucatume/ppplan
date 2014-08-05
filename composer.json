@@ -9,8 +9,9 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {
-        "codeception/codeception": "*"
+    "require-dev": {
+        "codeception/codeception": "*",
+        "codeception/remote-debug": "*"
     },
 	"autoload": {
 		"psr-4":{
