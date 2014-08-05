@@ -35,10 +35,11 @@ $options = (object)array_merge((array)$defaultOptions, (array)$options);
 
 $colors = new Colors();
 $hourReader = new HourReader($options);
-$ppplan = new PPPlan($colors, $hourReader, $review, $options);
+$listFormatter = new $ListFormatter($options->format);
+$ppplan = new PPPlan($colors, $hourReader, $listFormatter, $review, $options);
 
 $ppplan->theHead($objective);
 $tasks = $ppplan->theQuestions($objective, $tasks, $review);
 $list = $ppplan->theResponse($objective, $tasks);
-$ppplan->theSavingOptions($list);
+$ppplan->theSavingOptions($objective, $tasks);
 ?>

@@ -8,16 +8,18 @@ class PPPlan
     
     protected $colors;
     protected $hourReader;
+    protected $listFormatter;
     protected $review;
     protected $lineColor = 'cyan';
     protected $listLineColor = 'white';
     protected $headPrinted;
     protected $options;
 
-    public function __construct(Colors $colors, HourReader $hourReader, $review = false, $options)
+    public function __construct(Colors $colors, HourReader $hourReader, ListFormatter $listFormatter, $review = false, $options)
     {
         $this->colors = $colors;
         $this->hourReader = $hourReader;
+        $this->listFormatter = $listFormatter;
         $this->review = $review;
         $this->headPrinted = false;
         $this->options = $options;
@@ -107,22 +109,7 @@ class PPPlan
     {
         $this->maybeClear();
         $this->maybeNewline();
-        $fileList = sprintf('Things to do to %s', $objective->title);
-        $fileList.= "\n";
-        $objective->totalHours = 0;
-        // remove the objective from the tasks
-        unset($tasks[0]);
-        $tasks = array_values($tasks);
-        foreach ($tasks as $task) {
-            if ($task->hours == 0) {
-                continue;
-            }
-            $tabs = "\n\t";
-            $fileList.= sprintf('%s- %s (est. %s hr%s)', $tabs, $task->title, $task->hours, Utils::getPluralSuffixFor($task->hours));
-            $objective->totalHours+= $task->hours;
-        }
-        $fileList.= "\n\n";
-        $fileList.= sprintf('that\'s a total estimate of %s hour%s', $objective->totalHours, Utils::getPluralSuffixFor($objective->totalHours));
+        $fileList = $this->listFormatter->formatList($objective, $tasks);
         if ($echo) {
             echo "\n" . $this->listColor($fileList) . "\n\n";
         }
@@ -130,7 +117,7 @@ class PPPlan
         return $fileList;
     }
     
-    public function theSavingOptions($list)
+    public function theSavingOptions(Objective $objective, array $tasks)
     {
         $task = readline($this->color("Do you want to save the list to a file (y/n)? "));
         if (!preg_match('/^(Y|y|yes|Yes)/', $task)) {
@@ -141,7 +128,9 @@ class PPPlan
             $fileName = 'todo_' . time();
         }
         $cwd = getcwd();
-        $filePath = $cwd . DIRECTORY_SEPARATOR . $fileName . '.txt';
+        $format = $this->options->outputFormat and $this->options->outputFormat == 'taskpaper' ? 'taskpaper' : 'txt';
+        $filePath = $cwd . DIRECTORY_SEPARATOR . $fileName . '.' . $format;
+        $list = $this->listFormatter = createListFrom($objective, $tasks, $format);
         if (file_put_contents($filePath, $list)) {
             echo $this->color("List written to the $filePath file.");
         }
@@ -160,4 +149,5 @@ class PPPlan
             echo "\n";
         }
     }
+
 }
