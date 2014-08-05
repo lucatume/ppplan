@@ -109,8 +109,16 @@ class PPPlan
     {
         $this->maybeClear();
         $this->maybeNewline();
+        
         // remove the first task from the list as it is the objective
         array_shift($tasks);
+        $totalHours = 0;
+        array_map(function ($task) use (&$totalHours)
+        {
+            $totalHours = + $task->hours;
+        }
+        , $tasks);
+        $objective->totalHours = $totalHours;
         $fileList = $this->listFormatter->formatList($objective, $tasks);
         if ($echo) {
             echo "\n" . $this->listColor($fileList) . "\n\n";
