@@ -27,7 +27,7 @@ class ListFormatter
     public function __construct($format = null, Unit $unit = null)
     {
         $this->setFormat($format);
-        $this->unit = isset($unit) ? $unit : new Unit();
+        $this->setUnit($unit);
     }
 
     public function formatLine(Task $task)
@@ -36,7 +36,7 @@ class ListFormatter
         $indent = "\t";
         switch ($this->format) {
             case 'taskpaper':
-                $out = sprintf('%s- %s @est(%s)', $indent, $task->title, $task->hours / $this->unit->base);
+                $out = sprintf('%s- %s @est(%s)', $indent, $task->title, ($task->hours / $this->unit->base));
                 break;
 
             default:
@@ -57,14 +57,14 @@ class ListFormatter
     public function formatHead(Objective $objective)
     {
         $out = '';
-        $newlinesAfterHead = "\n";
         switch ($this->format) {
             case 'taskpaper':
-                $newLinesBeforeNote = "\n";
+                $newLinesBeforeNote = "\n\n";
                 $out = sprintf('%s: @est(%s)%sestimates in %ss', ucfirst($objective->title), $objective->totalHours / $this->unit->base, $newLinesBeforeNote, $this->unit->name);
                 break;
 
             default:
+                $newlinesAfterHead = "\n";
                 $out = sprintf('Things to do to %s:%s', lcfirst($objective->title) , $newlinesAfterHead);
                 break;
         }
@@ -89,7 +89,9 @@ class ListFormatter
     {
         $this->format = ($format and in_array($format, $this->legitFormats)) ? $format : 'txt';
     }
-    public function setUnit(Unit $unit){
-        $this->unit = $unit;
+
+    public function setUnit(Unit $unit = null)
+    {
+        $this->unit = $unit ? $unit : new Unit();
     }
 }

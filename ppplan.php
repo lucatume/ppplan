@@ -36,7 +36,10 @@ $options = (object)array_merge((array)$defaultOptions, (array)$options);
 $colors = new Colors();
 $hourReader = new HourReader($options);
 $format = isset($options->format) ? $options->format : 'txt';
-$listFormatter = new ListFormatter($format);
+// setup the unit to use for the output
+$outputUnit = isset($options->outputUnit) ? $options->outputUnit : null;
+$outputUnit = Units::createOutputUnitFrom($outputUnit);
+$listFormatter = new ListFormatter($format, $outputUnit);
 $ppplan = new PPPlan($colors, $hourReader, $listFormatter, $review, $options);
 
 $ppplan->theHead($objective);

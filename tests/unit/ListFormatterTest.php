@@ -68,7 +68,7 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
         $objective = new Objective('do something', 5);
         $sut = new ListFormatter('taskpaper');
         $line = $sut->formatHead($objective);
-        $this->assertEquals("Do something: @est(5)\nestimates in hours", $line);
+        $this->assertEquals("Do something: @est(5)\n\nestimates in hours", $line);
     }
     
     /**
@@ -133,7 +133,7 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
             $task1,
             $task2
         ));
-        $expected = "Do something: @est(2.8)\nestimates in hours\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
+        $expected = "Do something: @est(2.8)\n\nestimates in hours\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
         $this->assertEquals($expected, $actual);
     }
 
@@ -170,7 +170,7 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
             $task1,
             $task2
         ));
-        $expected = "Do something: @est(2.8)\nestimates in hours\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
+        $expected = "Do something: @est(2.8)\n\nestimates in hours\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
         $this->assertEquals($expected, $actual);
     }
 
@@ -214,7 +214,107 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
             $task1,
             $task2
         ));
-        $expected = "Do something: @est(6)\nestimates in pomodoros\n\t- do task one @est(4)\n\t- do task two @est(2)";
+        $expected = "Do something: @est(6)\n\nestimates in pomodoros\n\t- do task one @est(4)\n\t- do task two @est(2)";
         $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     * it should properly output lists for hour output unit
+     */
+    public function it_should_properly_output_lists_for_minute_output_unit()
+    {
+        $objective = new Objective('do something', 3);
+        $task1 = new Task('do task one', 2, false);
+        $task2 = new Task('do task two', 1, false);
+        $sut = new ListFormatter('taskpaper');
+        $unit = new Unit(1 / 60, 'minute');
+        $sut->setUnit($unit);
+        $actual = $sut->formatList($objective, array(
+            $task1,
+            $task2
+        ));
+        $expected = "Do something: @est(180)\n\nestimates in minutes\n\t- do task one @est(120)\n\t- do task two @est(60)";
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     * it should properly output lists for hour output unit
+     */
+    public function it_should_properly_output_lists_for_hour_output_unit()
+    {
+        $objective = new Objective('do something', 3);
+        $task1 = new Task('do task one', 2, false);
+        $task2 = new Task('do task two', 1, false);
+        $sut = new ListFormatter('taskpaper');
+        $unit = new Unit(1, 'hour');
+        $sut->setUnit($unit);
+        $actual = $sut->formatList($objective, array(
+            $task1,
+            $task2
+        ));
+        $expected = "Do something: @est(3)\n\nestimates in hours\n\t- do task one @est(2)\n\t- do task two @est(1)";
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     * it should properly output lists for hour output unit
+     */
+    public function it_should_properly_output_lists_for_day_output_unit()
+    {
+        $objective = new Objective('do C', 72);
+        $task1 = new Task('do A', 24);
+        $task2 = new Task('do B', 48);
+        $sut = new ListFormatter('txt');
+        $unit = new Unit(24, 'day');
+        $sut->setUnit($unit);
+        $expected = "Things to do to do C:\n\n\t- do A (est. 1 day)\n\t- do B (est. 2 days)\n\nThat's a total estimate of 3 days.";
+        $actual = $sut->formatList($objective, array($task1, $task2));
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     * it should properly format lines using days
+     */
+    public function it_should_properly_format_lines_using_days()
+    {
+        $task = new Task('do task', 24);
+        $unit = new Unit(24, 'day');
+        $sut = new ListFormatter('txt', $unit);
+        $actual = $sut->formatLine($task);
+        $expected = "\n\t- do task (est. 1 day)";
+    }
+
+    /**
+     * @test
+     * it should properly format lines setting day unit using set unit method
+     */
+    public function it_should_properly_format_lines_setting_day_unit_using_set_unit_method()
+    {
+        $task = new Task('do task', 24);
+        // hout based
+        $sut = new ListFormatter('txt');
+        $actual = $sut->formatLine($task);
+        $expected = "\n\t- do task (est. 24 hours)";
+        $unit = new Unit(24, 'day');
+        $sut->setUnit($unit);
+        $actual = $sut->formatLine($task);
+        $expected = "\n\t- do task (est. 1 day)";
+    }
+
+    /**
+     * @test
+     * it should properly format the foot using the day unit
+     */
+    public function it_should_properly_format_the_foot_using_the_day_unit()
+    {
+        $objective = new Objective('do something', 24);
+        $unit = new Unit(24, 'day');
+        $sut = new ListFormatter('txt', $unit);
+        $line = $sut->formatFoot($objective);
+        $this->assertEquals("\n\nThat's a total estimate of 1 day.", $line);
     }
 }
