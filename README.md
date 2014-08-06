@@ -27,6 +27,10 @@ Using the `--dayDuration`, `--weekDuration` and `--pomodoroDuration` options lik
 
 I'm specifying that `1 day` means 8 hours, `1 week` means 5 days and `1 pomodoro` means 50 minutes.  
 
+### Output unit
+By default estimate values will be expressed in hours but the script allows overriding that behaviour using the `--outputUnit` option like
+
+    ppplan --outputUnit [minute|hour|pomodoro|day|week]
 ## Persisting options
 To allow for a more streamlined use of the script the command arguments that should be input on each script call can be saved to the `~/.ppplan` file to have them read and used on each `ppplan` call. Run time options will override the ones set in the file though. The file format is the same as the command line options hence, to persist the options about day, week and pomodoro duration, I could type something like
     
