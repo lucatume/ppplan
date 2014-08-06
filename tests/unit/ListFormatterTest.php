@@ -68,7 +68,7 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
         $objective = new Objective('do something', 5);
         $sut = new ListFormatter('taskpaper');
         $line = $sut->formatHead($objective);
-        $this->assertEquals("Do something: @est(5)", $line);
+        $this->assertEquals("Do something: @est(5)\nestimates in hours", $line);
     }
     
     /**
@@ -133,7 +133,7 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
             $task1,
             $task2
         ));
-        $expected = "Do something: @est(2.8)\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
+        $expected = "Do something: @est(2.8)\nestimates in hours\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
         $this->assertEquals($expected, $actual);
     }
 
@@ -170,7 +170,7 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
             $task1,
             $task2
         ));
-        $expected = "Do something: @est(2.8)\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
+        $expected = "Do something: @est(2.8)\nestimates in hours\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
         $this->assertEquals($expected, $actual);
     }
 
@@ -193,6 +193,28 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
             $task2
         ));
         $expected = "Things to do to do something:\n\n\t- do task one (est. 4 pomodoros)\n\t- do task two (est. 2 pomodoros)\n\nThat's a total estimate of 6 pomodoros.";
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     * it should properly output taskpaper format head reporting the estimate unit
+     */
+    public function it_should_properly_output_taskpaper_format_head_reporting_the_estimate_unit()
+    {
+        $objective = new Objective('do something', 3);
+        $task1 = new Task('do task one', 2, false);
+        $task2 = new Task('do task two', 1, false);
+        $sut = new ListFormatter('taskpaper');
+        // a pomodoro is 30 mins on 1 hour => 0.5
+        $unit = new Unit(30 / 60, 'pomodoro');
+        // set the base to one pomodoro + pause
+        $sut->setUnit($unit);
+        $actual = $sut->formatList($objective, array(
+            $task1,
+            $task2
+        ));
+        $expected = "Do something: @est(6)\nestimates in pomodoros\n\t- do task one @est(4)\n\t- do task two @est(2)";
         $this->assertEquals($expected, $actual);
     }
 }

@@ -60,7 +60,8 @@ class ListFormatter
         $newlinesAfterHead = "\n";
         switch ($this->format) {
             case 'taskpaper':
-                $out = sprintf('%s: @est(%s)', ucfirst($objective->title), $objective->totalHours / $this->unit->base);
+                $newLinesBeforeNote = "\n";
+                $out = sprintf('%s: @est(%s)%sestimates in %ss', ucfirst($objective->title), $objective->totalHours / $this->unit->base, $newLinesBeforeNote, $this->unit->name);
                 break;
 
             default:
