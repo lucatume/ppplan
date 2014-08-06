@@ -1,7 +1,8 @@
 <?php
 use PPPlan\ListFormatter;
-use PPPlan\Task;
 use PPPlan\Objective;
+use PPPlan\Task;
+use PPPlan\Unit;
 
 class ListFormatterTest extends \PHPUnit_Framework_TestCase
 {
@@ -43,7 +44,7 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
         $task = new Task('do some task', 4, false);
         $sut = new ListFormatter('txt');
         $line = $sut->formatLine($task);
-        $this->assertEquals("\t- do some task (est. 4 hrs)", $line);
+        $this->assertEquals("\t- do some task (est. 4 hours)", $line);
     }
     
     /**
@@ -55,7 +56,7 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
         $task = new Task('do some task', 1, false);
         $sut = new ListFormatter('txt');
         $line = $sut->formatLine($task);
-        $this->assertEquals("\t- do some task (est. 1 hr)", $line);
+        $this->assertEquals("\t- do some task (est. 1 hour)", $line);
     }
     
     /**
@@ -91,7 +92,7 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
         $task = new Task('do some task', 1.3, false);
         $sut = new ListFormatter('txt');
         $line = $sut->formatLine($task);
-        $this->assertEquals("\t- do some task (est. 1.3 hrs)", $line);
+        $this->assertEquals("\t- do some task (est. 1.3 hours)", $line);
     }
     
     /**
@@ -135,12 +136,13 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
         $expected = "Do something: @est(2.8)\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
         $this->assertEquals($expected, $actual);
     }
-        /**
-         * @test
-         * it should format a list to plain text format
-         */
-        public function it_should_format_a_list_to_plain_text_format()
-        {
+
+    /**
+     * @test
+     * it should format a list to plain text format
+     */
+    public function it_should_format_a_list_to_plain_text_format()
+    {
         $objective = new Objective('do something', 2.8);
         $task1 = new Task('do task one', 1.5, false);
         $task2 = new Task('do task two', 1.3, false);
@@ -149,25 +151,48 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
             $task1,
             $task2
         ));
-        $expected = "Things to do to do something:\n\n\t- do task one (est. 1.5 hrs)\n\t- do task two (est. 1.3 hrs)\n\nThat's a total estimate of 2.8 hours.";
+        $expected = "Things to do to do something:\n\n\t- do task one (est. 1.5 hours)\n\t- do task two (est. 1.3 hours)\n\nThat's a total estimate of 2.8 hours.";
         $this->assertEquals($expected, $actual);
-        }
-            /**
-             * @test
-             * it should allow overriding the format setting the  format property
-             */
-            public function it_should_allow_overriding_the_format_setting_the_format_property()
-            {
+    }
+
+    /**
+     * @test
+     * it should allow overriding the format setting the  format property
+     */
+    public function it_should_allow_overriding_the_format_setting_the_format_property()
+    {
         $objective = new Objective('do something', 2.8);
         $task1 = new Task('do task one', 1.5, false);
         $task2 = new Task('do task two', 1.3, false);
         $sut = new ListFormatter('txt');
-                $sut->setFormat('taskpaper');
+        $sut->setFormat('taskpaper');
         $actual = $sut->formatList($objective, array(
             $task1,
             $task2
         ));
         $expected = "Do something: @est(2.8)\n\t- do task one @est(1.5)\n\t- do task two @est(1.3)";
         $this->assertEquals($expected, $actual);
-            }
+    }
+
+    /**
+     * @test
+     * it should allow setting the output to different bases
+     */
+    public function it_should_allow_setting_the_output_to_different_bases()
+    {
+        $objective = new Objective('do something', 3);
+        $task1 = new Task('do task one', 2, false);
+        $task2 = new Task('do task two', 1, false);
+        $sut = new ListFormatter('txt');
+        // a pomodoro is 30 mins on 1 hour => 0.5
+        $unit = new Unit(30 / 60, 'pomodoro');
+        // set the base to one pomodoro + pause
+        $sut->setUnit($unit);
+        $actual = $sut->formatList($objective, array(
+            $task1,
+            $task2
+        ));
+        $expected = "Things to do to do something:\n\n\t- do task one (est. 4 pomodoros)\n\t- do task two (est. 2 pomodoros)\n\nThat's a total estimate of 6 pomodoros.";
+        $this->assertEquals($expected, $actual);
+    }
 }

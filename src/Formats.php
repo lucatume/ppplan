@@ -11,4 +11,4 @@ class Formats
     {
         return (isset($format) and in_array($format, self::$validFormats)) ? $format : self::$validFormats[0];
     }
-} 
+}

@@ -5,27 +5,42 @@ namespace PPPlan;
 
 class ListFormatter
 {
+
+    /**
+     * The format to use for the output, defaults to `txt`.
+     *
+     * @var string
+     */
     protected $format = 'txt';
+
+    protected $unit;
+    /**
+     * The possible and valid output formats the list formatter supports.
+     *
+     * @var array
+     */
     protected $legitFormats = array(
         'txt',
         'taskpaper'
     );
-    
-    public function __construct($format = null)
+
+    public function __construct($format = null, Unit $unit = null)
     {
         $this->setFormat($format);
+        $this->unit = isset($unit) ? $unit : new Unit();
     }
+
     public function formatLine(Task $task)
     {
         $out = '';
         $indent = "\t";
         switch ($this->format) {
             case 'taskpaper':
-                $out = sprintf('%s- %s @est(%s)', $indent, $task->title, $task->hours);
+                $out = sprintf('%s- %s @est(%s)', $indent, $task->title, $task->hours / $this->unit->base);
                 break;
 
             default:
-                $out = sprintf('%s- %s (est. %s hr%s)', $indent, $task->title, $task->hours, Utils::getPluralSuffixFor($task->hours));
+                $out = sprintf('%s- %s (est. %s %s%s)', $indent, $task->title, $task->hours / $this->unit->base, $this->unit->name, Utils::getPluralSuffixFor($task->hours / $this->unit->base));
                 break;
         }
         return $out;
@@ -45,7 +60,7 @@ class ListFormatter
         $newlinesAfterHead = "\n";
         switch ($this->format) {
             case 'taskpaper':
-                $out = sprintf('%s: @est(%s)', ucfirst($objective->title) , $objective->totalHours);
+                $out = sprintf('%s: @est(%s)', ucfirst($objective->title), $objective->totalHours / $this->unit->base);
                 break;
 
             default:
@@ -64,7 +79,7 @@ class ListFormatter
                 break;
 
             default:
-                $out = sprintf('%sThat\'s a total estimate of %s hour%s.', $beforeFoot, $objective->totalHours, Utils::getPluralSuffixFor($objective->totalHours));
+                $out = sprintf('%sThat\'s a total estimate of %s %s%s.', $beforeFoot, $objective->totalHours / $this->unit->base, $this->unit->name, Utils::getPluralSuffixFor($objective->totalHours / $this->unit->base));
                 break;
         }
         return $out;
@@ -72,5 +87,8 @@ class ListFormatter
     public function setFormat($format)
     {
         $this->format = ($format and in_array($format, $this->legitFormats)) ? $format : 'txt';
+    }
+    public function setUnit(Unit $unit){
+        $this->unit = $unit;
     }
 }
