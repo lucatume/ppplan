@@ -61,15 +61,15 @@ class HourReaderTest extends \PHPUnit_Framework_TestCase
     }
     public function pomodorosProvider(){
         return array(
-            array('1p', round(25/60, 2)),
-            array('1 p', round(25/60, 2)),
-            array('1pomodoro', round(25/60, 2)),
-            array('1 pomodoro', round(25/60, 2)),
-            array('1pomos', round(25/60, 2)),
-            array('1 pomos', round(25/60, 2)),
-            array('1pomodoros', round(25/60, 2)),
-            array('1 pomodoros', round(25/60, 2)),
-            array('4.5p', round(4.5*25/60, 2))
+            array('1p', round(30/60, 2)),
+            array('1 p', round(30/60, 2)),
+            array('1pomodoro', round(30/60, 2)),
+            array('1 pomodoro', round(30/60, 2)),
+            array('1pomos', round(30/60, 2)),
+            array('1 pomos', round(30/60, 2)),
+            array('1pomodoros', round(30/60, 2)),
+            array('1 pomodoros', round(30/60, 2)),
+            array('4.5p', round(4.5*30/60, 2))
         );
     }
     public function weeksProvider(){

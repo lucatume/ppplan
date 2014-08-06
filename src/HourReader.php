@@ -5,6 +5,9 @@ namespace PPPlan;
 
 class HourReader
 {
+    /**
+     * @var int The duration of a pomodoro in minutes including the pause.
+     */
     protected $pomodoroDuration;
     protected $dayDuration;
     protected $weekDuration;
@@ -15,7 +18,7 @@ class HourReader
         $this->options = is_null($options) ? new \stdClass() : $options;
         $this->dayDuration = isset($this->options->dayDuration) ? floatval($this->options->dayDuration) : 24;
         $this->weekDuration = isset($this->options->weekDuration) ? floatval($this->options->weekDuration) : 7;
-        $this->pomodoroDuration = isset($this->options->pomodoroDuration) ? floatval($this->options->pomodoroDuration) : 25;
+        $this->pomodoroDuration = isset($this->options->pomodoroDuration) ? floatval($this->options->pomodoroDuration) : 30;
     }
 
     public function getHoursFrom($answer)
@@ -36,9 +39,9 @@ class HourReader
         return round($answer / $base, 2);
     }
 
-    public function setPomodoroDuration($duration = 25)
+    public function setPomodoroDuration($durationIncludingPause = 30)
     {
-        $this->pomodoroDuration = intval($duration);
+        $this->pomodoroDuration = intval($durationIncludingPause);
     }
 
     public function setDayDuration($duration = 24)
