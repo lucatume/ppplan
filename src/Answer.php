@@ -12,4 +12,9 @@ class Answer
         }
         return true;
     }
-} 
+
+    public static function isNo($answer)
+    {
+        return !self::isYes($answer);
+    }
+}

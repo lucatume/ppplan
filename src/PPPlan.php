@@ -110,11 +110,12 @@ class PPPlan
     public function theSavingOptions(Objective $objective, array $tasks)
     {
         $answer = readline("Do you want to save the list to a file (y/n)? ");
-        if (Answer::isYes($answer)) {
+        if (Answer::isNo($answer)) {
             return;
         }
         $shouldWrite = false;
-        while (!$shouldWrite) {
+        $filePath = '';
+        do {
             $fileName = readline("\nType the name of the file to save the list in (do not include file extension):\n");
             $filePath = $this->getFilePathFor($fileName);
             if (file_exists($filePath)) {
@@ -123,9 +124,8 @@ class PPPlan
                     $shouldWrite = true;
                 }
             }
-        }
-        $fileName = readline("\nType the name of the file to save the list in (do not include file extension):\n");
-        $filePath = $this->getFilePathFor($fileName);
+        } while (!$shouldWrite);
+
         $format = $this->getFileFormat();
         $this->listFormatter->setFormat($format);
         list($tasks, $totalHours) = $this->setObjective($tasks);
