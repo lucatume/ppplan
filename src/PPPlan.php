@@ -115,29 +115,31 @@ class PPPlan
         }
         $shouldWrite = false;
         $filePath = '';
+        $format = '';
+        $baseName = '';
         do {
             $fileName = readline("\nType the name of the file to save the list in (do not include file extension):\n");
-            $filePath = $this->getFilePathFor($fileName);
+            list($filePath, $format) = $this->getFilePathFor($fileName);
             if (file_exists($filePath)) {
-                $answer = readline("File $filePath already created: do you want to overwrite it (y/n)?");
+                $baseName = baseName($filePath);
+                $answer = readline("File $baseName already created: do you want to append the list to it (y/n)?");
                 if(Answer::isYes($answer)){
                     $shouldWrite = true;
                 }
             }
         } while (!$shouldWrite);
 
-        $format = $this->getFileFormat();
         $this->listFormatter->setFormat($format);
         list($tasks, $totalHours) = $this->setObjective($tasks);
         $list = $this->listFormatter->formatList($objective, $tasks);
         // check for file existence
         if (file_exists($filePath)) {
             if (file_put_contents($filePath, $list, FILE_APPEND)) {
-                echo "List appended to the $filePath file.";
+                echo "List appended to the $baseName file.";
             }
         } else {
             if (file_put_contents($filePath, $list)) {
-                echo "List written to the $filePath file.";
+                echo "List written to the $baseName file.";
             }
         }
     }
@@ -177,7 +179,7 @@ class PPPlan
         $cwd = getcwd();
         $format = $this->getFileFormat();
         $filePath = $cwd . DIRECTORY_SEPARATOR . $fileName . '.' . $format;
-        return $filePath;
+        return array($filePath, $format);
     }
 
     /**
