@@ -120,12 +120,14 @@ class PPPlan
         do {
             $fileName = readline("\nType the name of the file to save the list in (do not include file extension):\n");
             list($filePath, $format) = $this->getFilePathFor($fileName);
+            $baseName = baseName($filePath);
             if (file_exists($filePath)) {
-                $baseName = baseName($filePath);
                 $answer = readline("File $baseName already created: do you want to append the list to it (y/n)?");
                 if(Answer::isYes($answer)){
                     $shouldWrite = true;
                 }
+            } else {
+                $shouldWrite = true;
             }
         } while (!$shouldWrite);
 
