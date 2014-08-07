@@ -49,9 +49,9 @@ To be able to launch the script from the command line, once the file has been do
 <code>sudo</code> authentication might be requested.
 
 ## Changelog
-0.6.0 - added taskpaper output format and the possibility to output lists with duration times in other times units than hours
-0.5.0 - added the possibility to enter durations in minutes, hours,days, weeks and pomodoros and persist options
-0.4.0 - refactoring and added the clear mode
-0.3.0 - added the possibility to review previously created lists
+0.6.0 - added taskpaper output format and the possibility to output lists with duration times in other times units than hours  
+0.5.0 - added the possibility to enter durations in minutes, hours,days, weeks and pomodoros and persist options  
+0.4.0 - refactoring and added the clear mode  
+0.3.0 - added the possibility to review previously created lists  
 0.2.0 - colored the output and refactored the code  
-0.1.0 - first working version
+0.1.0 - first working version  
