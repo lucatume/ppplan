@@ -20,12 +20,12 @@ For a more focused interaction with the script use the <code>--clear</code> opti
     php ppplan.php --clear
 
 ### Day, week and pomodoro duration
-PPPlan will understand natural language task durations like `1w` or `3p` to specify a task duration estimation and will allow specifying durations using options too; by defaults **a day is 24 hours long, a week is 7 days long and a pomodoro is 25 minutes long**.  
+PPPlan will understand natural language task durations like `1w` or `3p` to specify a task duration estimation and will allow specifying durations using options too; by defaults **a day is 24 hours long, a week is 7 days long and a pomodoro is 30 minutes long**.  
 Using the `--dayDuration`, `--weekDuration` and `--pomodoroDuration` options like
 
-    ppplan --dayDuration 8 --weekDuration 5 --pomodoroDuration 50
+    ppplan --dayDuration 8 --weekDuration 5 --pomodoroDuration 60
 
-I'm specifying that `1 day` means 8 hours, `1 week` means 5 days and `1 pomodoro` means 50 minutes.  
+I'm specifying that `1 day` means 8 hours, `1 week` means 5 days and `1 pomodoro` means 60 minutes (pomodoro and 10 minutes pause duration).
 
 ### Output unit
 By default estimate values will be expressed in hours but the script allows overriding that behaviour using the `--outputUnit` option like
