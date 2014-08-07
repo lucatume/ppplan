@@ -60,7 +60,6 @@ class PPPlan
         if ($task->hours > 0 and !$task->toEstimate) {
             return;
         }
-        var_dump($tasks);
         $this->maybeClear();
         $answer = '';
         if ($task->toEstimate) {
@@ -159,9 +158,9 @@ class PPPlan
     
     protected function maybeClear()
     {
-//        if (isset($this->options->clear) and $this->options->clear) {
-//            System::clear();
-//        }
+        if (isset($this->options->clear) and $this->options->clear) {
+            System::clear();
+        }
     }
     
     protected function maybeNewline()
