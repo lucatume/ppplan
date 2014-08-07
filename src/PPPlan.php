@@ -57,6 +57,10 @@ class PPPlan
     
     protected function askEstimationFor(Task $task, array & $tasks)
     {
+        if ($task->hours > 0 and !$task->toEstimate) {
+            return;
+        }
+        var_dump($tasks);
         $this->maybeClear();
         $answer = '';
         if ($task->toEstimate) {
@@ -68,7 +72,12 @@ class PPPlan
         if ($task->hours == 0) {
             $task->toEstimate = false;
             $subTasks = $this->askDecomposeFor($task);
+            // remove the task from the tasks
+            $key = array_search($task, $tasks);
+            unset($tasks[$key]);
+            $tasks = array_values($tasks);
             foreach ($subTasks as $subTask) {
+                // 0 hours, to estimate
                 $tasks[] = new Task($subTask);
             }
         } else {
@@ -150,9 +159,9 @@ class PPPlan
     
     protected function maybeClear()
     {
-        if (isset($this->options->clear) and $this->options->clear) {
-            System::clear();
-        }
+//        if (isset($this->options->clear) and $this->options->clear) {
+//            System::clear();
+//        }
     }
     
     protected function maybeNewline()
@@ -164,7 +173,6 @@ class PPPlan
 
     protected function setObjective(array $tasks)
     {
-        array_shift($tasks);
         $totalHours = 0;
         array_map(function ($task) use (&$totalHours) {
                 $totalHours += $task->hours;
