@@ -106,32 +106,39 @@ class PPPlan
         
         return $fileList;
     }
-    
+
     public function theSavingOptions(Objective $objective, array $tasks)
     {
-        $task = readline("Do you want to save the list to a file (y/n)? ");
-        if (!preg_match('/^(Y|y|yes|Yes)/', $task)) {
+        $answer = readline("Do you want to save the list to a file (y/n)? ");
+        if (Answer::isYes($answer)) {
             return;
         }
+        $shouldWrite = false;
+        while (!$shouldWrite) {
+            $fileName = readline("\nType the name of the file to save the list in (do not include file extension):\n");
+            $filePath = $this->getFilePathFor($fileName);
+            if (file_exists($filePath)) {
+                $answer = readline("File $filePath already created: do you want to overwrite it (y/n)?");
+                if(Answer::isYes($answer)){
+                    $shouldWrite = true;
+                }
+            }
+        }
         $fileName = readline("\nType the name of the file to save the list in (do not include file extension):\n");
-        if (!$fileName) {
-            $fileName = 'todo_' . time();
-        }
-        $cwd = getcwd();
-        $format = '';
-        if (!isset($this->options->format)) {
-            $line = "File format (taskpaper/txt)?\n";
-            $format = readline($line);
-        } else {
-            $format = $this->options->format;
-        }
-        $format = Formats::getValidFormatFor($format);
-        $filePath = $cwd . DIRECTORY_SEPARATOR . $fileName . '.' . $format;
+        $filePath = $this->getFilePathFor($fileName);
+        $format = $this->getFileFormat();
         $this->listFormatter->setFormat($format);
         list($tasks, $totalHours) = $this->setObjective($tasks);
         $list = $this->listFormatter->formatList($objective, $tasks);
-        if (file_put_contents($filePath, $list)) {
-            echo "List written to the $filePath file.";
+        // check for file existence
+        if (file_exists($filePath)) {
+            if (file_put_contents($filePath, $list, FILE_APPEND)) {
+                echo "List appended to the $filePath file.";
+            }
+        } else {
+            if (file_put_contents($filePath, $list)) {
+                echo "List written to the $filePath file.";
+            }
         }
     }
     
@@ -158,5 +165,34 @@ class PPPlan
             }
             , $tasks);
         return array($tasks, $totalHours);
+    }
+
+    /**
+     * @param $fileName
+     * @return array
+     */
+    protected function getFilePathFor($fileName)
+    {
+        $fileName = is_string($fileName) ? $fileName : 'todo_' . time();
+        $cwd = getcwd();
+        $format = $this->getFileFormat();
+        $filePath = $cwd . DIRECTORY_SEPARATOR . $fileName . '.' . $format;
+        return $filePath;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getFileFormat()
+    {
+        $format = '';
+        if (!isset($this->options->format)) {
+            $line = "File format (taskpaper/txt)?\n";
+            $format = readline($line);
+        } else {
+            $format = $this->options->format;
+        }
+        $format = Formats::getValidFormatFor($format);
+        return $format;
     }
 }
