@@ -6,7 +6,6 @@ namespace PPPlan;
 class PPPlan
 {
     
-    protected $colors;
     protected $hourReader;
     protected $listFormatter;
     protected $review;
@@ -15,9 +14,8 @@ class PPPlan
     protected $headPrinted;
     protected $options;
     
-    public function __construct(Colors $colors, HourReader $hourReader, ListFormatter $listFormatter, $review = false, $options)
+    public function __construct(HourReader $hourReader, ListFormatter $listFormatter, $review = false, $options)
     {
-        $this->colors = $colors;
         $this->hourReader = $hourReader;
         $this->listFormatter = $listFormatter;
         $this->review = $review;
@@ -25,28 +23,18 @@ class PPPlan
         $this->options = $options;
     }
     
-    protected function color($string)
-    {
-        return $this->colors->getColoredString($string, $this->lineColor);
-    }
-    
-    protected function listColor($string)
-    {
-        return $this->colors->getColoredString($string, $this->listLineColor);
-    }
-    
     public function theHead(Objective $objective)
     {
         $this->maybeClear();
         if ($this->review) {
             $line = sprintf('Review the things to do to %s (y/n)? ', $objective->title);
-            echo "\n" . $this->color($line);
-            echo "\n" . $this->color(preg_replace('/./', '-', $line)) . "\n";
+            echo "\n" . $line;
+            echo "\n" . preg_replace('/./', '-', $line) . "\n";
             if (!preg_match('/^(Y|y).*/', readline())) {
                 exit;
             }
         } else {
-            $objective->title = readline($this->color("What do you want to do?\n\n"));
+            $objective->title = readline("What do you want to do?\n\n");
         }
     }
     
@@ -73,7 +61,7 @@ class PPPlan
         $answer = '';
         if ($task->toEstimate) {
             $this->maybeNewline();
-            $line = $this->color("How long will it take to $task->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n", 'cyan');
+            $line = "How long will it take to $task->title?\n(Either a fraction number or 0 for \"I do not know\")\n\n";
             $answer = readline($line);
         }
         $task->hours = $this->hourReader->getHoursFrom($answer);
@@ -92,7 +80,7 @@ class PPPlan
     {
         $this->maybeClear();
         $this->maybeNewline();
-        $subTasks = explode(', ', readline($this->color("Ok, what's needed to $task->title?\n(Tasks in a comma separated list)\n\n")));
+        $subTasks = explode(', ', readline("Ok, what's needed to $task->title?\n(Tasks in a comma separated list)\n\n"));
         return $subTasks;
     }
     
@@ -113,7 +101,7 @@ class PPPlan
         $objective->totalHours = $totalHours;
         $fileList = $this->listFormatter->formatList($objective, $tasks);
         if ($echo) {
-            echo "\n" . $this->listColor($fileList) . "\n\n";
+            echo "\n" . $fileList . "\n\n";
         }
         
         return $fileList;
@@ -121,11 +109,11 @@ class PPPlan
     
     public function theSavingOptions(Objective $objective, array $tasks)
     {
-        $task = readline($this->color("Do you want to save the list to a file (y/n)? "));
+        $task = readline("Do you want to save the list to a file (y/n)? ");
         if (!preg_match('/^(Y|y|yes|Yes)/', $task)) {
             return;
         }
-        $fileName = readline($this->color("\nType the name of the file to save the list in (do not include file extension):\n"));
+        $fileName = readline("\nType the name of the file to save the list in (do not include file extension):\n");
         if (!$fileName) {
             $fileName = 'todo_' . time();
         }
@@ -133,7 +121,7 @@ class PPPlan
         $format = '';
         if (!isset($this->options->format)) {
             $line = "File format (taskpaper/txt)?\n";
-            $format = readline($this->color($line));
+            $format = readline($line);
         } else {
             $format = $this->options->format;
         }
@@ -143,7 +131,7 @@ class PPPlan
         list($tasks, $totalHours) = $this->setObjective($tasks);
         $list = $this->listFormatter->formatList($objective, $tasks);
         if (file_put_contents($filePath, $list)) {
-            echo $this->color("List written to the $filePath file.");
+            echo "List written to the $filePath file.";
         }
     }
     
