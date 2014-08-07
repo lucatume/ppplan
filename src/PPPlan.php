@@ -134,6 +134,8 @@ class PPPlan
         $list = $this->listFormatter->formatList($objective, $tasks);
         // check for file existence
         if (file_exists($filePath)) {
+            // prepend the new list with newlines
+            $list = "\n\n" . $list;
             if (file_put_contents($filePath, $list, FILE_APPEND)) {
                 echo "List appended to the $baseName file.";
             }
