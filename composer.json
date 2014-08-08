@@ -1,7 +1,7 @@
 {
     "name": "lucatume/ppplan",
     "description": "A PHP CLI application to help planning and estimating tasks.",
-    "license": "GNU GPL 2.0",
+    "license": "GPL-2.0+",
     "authors": [
         {
             "name": "theAverageDev",

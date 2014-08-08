@@ -16,7 +16,7 @@ class Unit
 
     public function setBase($base)
     {
-        $this->base = (is_scalar($base) and $base > 0) ? floatval($base) : 1;
+        $this->base = (is_scalar($base) && $base > 0) ? floatval($base) : 1;
     }
 
     public function setName($name)

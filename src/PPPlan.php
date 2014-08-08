@@ -31,7 +31,7 @@ class PPPlan
             echo "\n" . $line;
             echo "\n" . preg_replace('/./', '-', $line) . "\n";
             if (!preg_match('/^(Y|y).*/', readline())) {
-                exit;
+                exit();
             }
         } else {
             $objective->title = readline("What do you want to do?\n\n");
@@ -45,7 +45,7 @@ class PPPlan
         ) , $tasks);
         while ($this->thereAreUnestimated($tasks)) {
             foreach ($tasks as $task) {
-                if (!$task->toEstimate and $task->hours == 0) {
+                if (!$task->toEstimate && $task->hours == 0) {
                     continue;
                 }
                 $this->askEstimationFor($task, $tasks);
@@ -57,7 +57,7 @@ class PPPlan
     
     protected function askEstimationFor(Task $task, array & $tasks)
     {
-        if ($task->hours > 0 and !$task->toEstimate) {
+        if ($task->hours > 0 && !$task->toEstimate) {
             return;
         }
         $this->maybeClear();
@@ -71,11 +71,13 @@ class PPPlan
         if ($task->hours == 0) {
             $task->toEstimate = false;
             $subTasks = $this->askDecomposeFor($task);
+            
             // remove the task from the tasks
             $key = array_search($task, $tasks);
             unset($tasks[$key]);
             $tasks = array_values($tasks);
             foreach ($subTasks as $subTask) {
+                
                 // 0 hours, to estimate
                 $tasks[] = new Task($subTask);
             }
@@ -105,7 +107,7 @@ class PPPlan
     {
         $this->maybeClear();
         $this->maybeNewline();
-        list($tasks, $totalHours) = $this->setObjective($tasks);
+        $totalHours = $this->getTotalHoursFrom($tasks);
         $objective->totalHours = $totalHours;
         $fileList = $this->listFormatter->formatList($objective, $tasks);
         if ($echo) {
@@ -114,7 +116,7 @@ class PPPlan
         
         return $fileList;
     }
-
+    
     public function theSavingOptions(Objective $objective, array $tasks)
     {
         $answer = readline("Do you want to save the list to a file (y/n)? ");
@@ -131,19 +133,20 @@ class PPPlan
             $baseName = baseName($filePath);
             if (file_exists($filePath)) {
                 $answer = readline("File $baseName already created: do you want to append the list to it (y/n)?");
-                if(Answer::isYes($answer)){
+                if (Answer::isYes($answer)) {
                     $shouldWrite = true;
                 }
             } else {
                 $shouldWrite = true;
             }
         } while (!$shouldWrite);
-
+        
         $this->listFormatter->setFormat($format);
-        list($tasks, $totalHours) = $this->setObjective($tasks);
         $list = $this->listFormatter->formatList($objective, $tasks);
+        
         // check for file existence
         if (file_exists($filePath)) {
+            
             // prepend the new list with newlines
             $list = "\n\n" . $list;
             if (file_put_contents($filePath, $list, FILE_APPEND)) {
@@ -158,7 +161,7 @@ class PPPlan
     
     protected function maybeClear()
     {
-        if (isset($this->options->clear) and $this->options->clear) {
+        if (isset($this->options->clear) && $this->options->clear) {
             System::clear();
         }
     }
@@ -169,17 +172,18 @@ class PPPlan
             echo "\n";
         }
     }
-
-    protected function setObjective(array $tasks)
+    
+    protected function getTotalHoursFrom(array $tasks)
     {
         $totalHours = 0;
-        array_map(function ($task) use (&$totalHours) {
-                $totalHours += $task->hours;
-            }
-            , $tasks);
-        return array($tasks, $totalHours);
+        array_map(function (Task $task) use (&$totalHours)
+        {
+            $totalHours+= $task->hours;
+        }
+        , $tasks);
+        return $totalHours;
     }
-
+    
     /**
      * @param $fileName
      * @return array
@@ -190,9 +194,12 @@ class PPPlan
         $cwd = getcwd();
         $format = $this->getFileFormat();
         $filePath = $cwd . DIRECTORY_SEPARATOR . $fileName . '.' . $format;
-        return array($filePath, $format);
+        return array(
+            $filePath,
+            $format
+        );
     }
-
+    
     /**
      * @return string
      */

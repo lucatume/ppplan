@@ -15,7 +15,7 @@ class ListFormatter
 
     protected $unit;
     /**
-     * The possible and valid output formats the list formatter supports.
+     * The possible && valid output formats the list formatter supports.
      *
      * @var array
      */
@@ -87,7 +87,7 @@ class ListFormatter
     }
     public function setFormat($format)
     {
-        $this->format = ($format and in_array($format, $this->legitFormats)) ? $format : 'txt';
+        $this->format = ($format && in_array($format, $this->legitFormats)) ? $format : 'txt';
     }
 
     public function setUnit(Unit $unit = null)

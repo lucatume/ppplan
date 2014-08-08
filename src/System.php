@@ -7,7 +7,7 @@ class System
 {
     protected static function isWin()
     {
-        if (defined('PHP_OS') and preg_match('/^W(in|IN).*/', PHP_OS)) {
+        if (defined('PHP_OS') && preg_match('/^W(in|IN).*/', PHP_OS)) {
             return true;
         }
         return false;

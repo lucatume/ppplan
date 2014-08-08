@@ -19,8 +19,7 @@ class Units
     public static function createOutputUnitFrom($outputUnitName = null)
     {
         $validUnits = self::getValidUnits();
-        $unit = (isset($outputUnitName) and array_key_exists($outputUnitName, $validUnits)) ? $outputUnitName : 'hour';
+        $unit = (isset($outputUnitName) && array_key_exists($outputUnitName, $validUnits)) ? $outputUnitName : 'hour';
         return new Unit($validUnits[$outputUnitName], $outputUnitName);
-        return $unit;
     }
 }

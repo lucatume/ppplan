@@ -8,7 +8,8 @@ class OptionReader
     public function getOptionsFrom($args)
     {
         $options = new \stdClass();
-        for ($i = 0; $i < count($args); $i++) {
+        $argsCount = count($args);
+        for ($i = 0; $i < $argsCount; $i++) {
             if (!preg_match('/^--/', $args[$i])) {
                 continue;
             } else {
@@ -17,7 +18,7 @@ class OptionReader
                 // the option value is either the following arg or true if the
                 // following arg is another option, also increase the counter (eventually)
                 $optionValue = true;
-                if (isset($args[$i + 1]) and !preg_match('/^--/', $args[$i + 1])) {
+                if (isset($args[$i + 1]) && !preg_match('/^--/', $args[$i + 1])) {
                     $optionValue = $args[++$i];
                 }
                 $options->$optionName = $optionValue;

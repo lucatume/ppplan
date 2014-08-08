@@ -9,6 +9,6 @@ class Formats
 
     public static function getValidFormatFor($format)
     {
-        return (isset($format) and in_array($format, self::$validFormats)) ? $format : self::$validFormats[0];
+        return (isset($format) && in_array($format, self::$validFormats)) ? $format : self::$validFormats[0];
     }
 }
