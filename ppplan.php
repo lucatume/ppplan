@@ -38,7 +38,7 @@ $format = isset($options->format) ? $options->format : 'txt';
 // setup the unit to use for the output
 $outputUnit = isset($options->outputUnit) ? $options->outputUnit : null;
 $outputUnit = Units::createOutputUnitFrom($outputUnit);
-$listFormatter = new ListFormatter($format, $outputUnit);
+$listFormatter = new ListFormatter($format, $outputUnit, $options);
 $ppplan = new PPPlan($hourReader, $listFormatter, $review, $options);
 
 $ppplan->theHead($objective);
