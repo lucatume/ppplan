@@ -31,6 +31,18 @@ I'm specifying that `1 day` means 8 hours, `1 week` means 5 days and `1 pomodoro
 By default estimate values will be expressed in hours but the script allows overriding that behaviour using the `--outputUnit` option like
 
     ppplan --outputUnit [minute|hour|pomodoro|day|week]
+
+### Estimate tag
+When using the Taskpaper format the `--etstimateTag` option can be used to set the label of the estimate tag to something different from `est`; this means that the
+
+    - do something @est(30)
+
+text can change to
+
+    - do something @mins(30)
+
+using the `--estimateTag mins` option. Please note the tag will change in the head of the list as well.
+
 ## Persisting options
 To allow for a more streamlined use of the script the command arguments that should be input on each script call can be saved to the `~/.ppplan` file to have them read and used on each `ppplan` call. Run time options will override the ones set in the file though. The file format is the same as the command line options hence, to persist the options about day, week and pomodoro duration, I could type something like
     

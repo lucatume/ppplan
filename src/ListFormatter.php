@@ -22,12 +22,13 @@ class ListFormatter
     protected $legitFormats = array(
         'txt',
         'taskpaper'
-    );
+        );
 
-    public function __construct($format = null, Unit $unit = null)
+    public function __construct($format = null, Unit $unit = null, $options = null)
     {
         $this->setFormat($format);
         $this->setUnit($unit);
+        $this->options = $options ? $options : new \stdClass;
     }
 
     public function formatLine(Task $task)
@@ -36,12 +37,13 @@ class ListFormatter
         $indent = "\t";
         switch ($this->format) {
             case 'taskpaper':
-                $out = sprintf('%s- %s @est(%s)', $indent, $task->title, ($task->hours / $this->unit->base));
-                break;
+            $estimateTag = $this->getEstimateTag();
+            $out = sprintf('%s- %s @%s(%s)', $indent, $task->title, $estimateTag, ($task->hours / $this->unit->base));
+            break;
 
             default:
-                $out = sprintf('%s- %s (est. %s %s%s)', $indent, $task->title, $task->hours / $this->unit->base, $this->unit->name, Utils::getPluralSuffixFor($task->hours / $this->unit->base));
-                break;
+            $out = sprintf('%s- %s (est. %s %s%s)', $indent, $task->title, $task->hours / $this->unit->base, $this->unit->name, Utils::getPluralSuffixFor($task->hours / $this->unit->base));
+            break;
         }
         return $out;
     }
@@ -59,14 +61,15 @@ class ListFormatter
         $out = '';
         switch ($this->format) {
             case 'taskpaper':
-                $newLinesBeforeNote = "\n\n";
-                $out = sprintf('%s: @est(%s)%sestimates in %ss', ucfirst($objective->title), $objective->totalHours / $this->unit->base, $newLinesBeforeNote, $this->unit->name);
-                break;
+            $newLinesBeforeNote = "\n\n";
+            $estimateTag = $this->getEstimateTag();
+            $out = sprintf('%s: @%s(%s)%sestimates in %ss', ucfirst($objective->title), $estimateTag, $objective->totalHours / $this->unit->base, $newLinesBeforeNote, $this->unit->name);
+            break;
 
             default:
-                $newlinesAfterHead = "\n";
-                $out = sprintf('Things to do to %s:%s', lcfirst($objective->title) , $newlinesAfterHead);
-                break;
+            $newlinesAfterHead = "\n";
+            $out = sprintf('Things to do to %s:%s', lcfirst($objective->title) , $newlinesAfterHead);
+            break;
         }
         return $out;
     }
@@ -76,12 +79,12 @@ class ListFormatter
         $beforeFoot = "\n\n";
         switch ($this->format) {
             case 'taskpaper':
-                $out = '';
-                break;
+            $out = '';
+            break;
 
             default:
-                $out = sprintf('%sThat\'s a total estimate of %s %s%s.', $beforeFoot, $objective->totalHours / $this->unit->base, $this->unit->name, Utils::getPluralSuffixFor($objective->totalHours / $this->unit->base));
-                break;
+            $out = sprintf('%sThat\'s a total estimate of %s %s%s.', $beforeFoot, $objective->totalHours / $this->unit->base, $this->unit->name, Utils::getPluralSuffixFor($objective->totalHours / $this->unit->base));
+            break;
         }
         return $out;
     }
@@ -93,5 +96,9 @@ class ListFormatter
     public function setUnit(Unit $unit = null)
     {
         $this->unit = $unit ? $unit : new Unit();
+    }
+    private function getEstimateTag(){
+
+        return (isset($this->options->estimateTag) && is_string($this->options->estimateTag)) ? $this->options->estimateTag : 'est';
     }
 }

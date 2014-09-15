@@ -317,4 +317,25 @@ class ListFormatterTest extends \PHPUnit_Framework_TestCase
         $line = $sut->formatFoot($objective);
         $this->assertEquals("\n\nThat's a total estimate of 1 day.", $line);
     }
+        /**
+         * @test
+         * it should allow setting the estimate tag
+         */
+        public function it_should_allow_setting_the_estimate_tag()
+        {
+        $objective = new Objective('do something', 2.8);
+        // set the unint to 'min', each lasting 1/60 of an hour
+        $unit = new Unit(1/60, 'minute');
+        $options = new stdClass();
+        $options->estimateTag = 'mins';
+        $task1 = new Task('do task one', 1.5, false);
+        $task2 = new Task('do task two', 1.3, false);
+        $sut = new ListFormatter('taskpaper', $unit, $options);
+        $actual = $sut->formatList($objective, array(
+            $task1,
+            $task2
+        ));
+        $expected = "Do something: @mins(168)\n\nestimates in minutes\n\t- do task one @mins(90)\n\t- do task two @mins(78)";
+        $this->assertEquals($expected, $actual);
+        }
 }
