@@ -4,6 +4,8 @@ namespace PPPlan;
 
 
 use Symfony\Component\Console\Input\Input;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class PPPlan
 {
@@ -15,14 +17,19 @@ class PPPlan
     protected $listLineColor = 'white';
     protected $headPrinted;
     protected $input;
+    /**
+     * @var OutputInterface
+     */
+    private $output;
 
-    public function __construct(HourReader $hourReader, ListFormatter $listFormatter, $review = false, Input $input)
+    public function __construct(HourReader $hourReader, ListFormatter $listFormatter, $review = false, InputInterface $input, OutputInterface $output)
     {
         $this->hourReader = $hourReader;
         $this->listFormatter = $listFormatter;
         $this->review = $review;
         $this->headPrinted = false;
         $this->input = $input;
+        $this->output = $output;
     }
 
     public function theHead(Objective $objective)
@@ -30,8 +37,8 @@ class PPPlan
         $this->maybeClear();
         if ($this->review) {
             $line = sprintf('Review the things to do to %s (y/n)? ', $objective->title);
-            echo "\n" . $line;
-            echo "\n" . preg_replace('/./', '-', $line) . "\n";
+            $this->output->writeln($line);
+            $this->output->writeln(preg_replace('/./', '-', $line));
             if (!preg_match('/^(Y|y).*/', readline())) {
                 exit();
             }
@@ -114,7 +121,7 @@ class PPPlan
         $objective->totalHours = $totalHours;
         $fileList = $this->listFormatter->formatList($objective, $tasks);
         if ($echo) {
-            echo "\n" . $fileList . "\n\n";
+            $this->output->writeln($fileList . "\n\n");
         }
 
         return $fileList;
@@ -157,7 +164,7 @@ class PPPlan
             }
         } else {
             if (file_put_contents($filePath, $list)) {
-                echo "\nList written to the $baseName file.\n";
+                $this->output->writeln("List written to the $baseName file.");
             }
         }
     }

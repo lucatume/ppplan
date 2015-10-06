@@ -39,7 +39,7 @@ class NewCommand extends Command
         $outputUnit = $input->getArgument('outputUnit');
         $outputUnit = Units::createOutputUnitFrom($outputUnit);
         $listFormatter = new ListFormatter($format, $outputUnit, $input);
-        $ppplan = new PPPlan($hourReader, $listFormatter, $this->isReviewing, $input);
+        $ppplan = new PPPlan($hourReader, $listFormatter, $this->isReviewing, $input, $output);
 
         $ppplan->theHead($objective);
         $tasks = $ppplan->theQuestions($objective, $tasks, $this->isReviewing);
