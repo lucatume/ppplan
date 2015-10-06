@@ -33,7 +33,7 @@ By default estimate values will be expressed in hours but the script allows over
     ppplan --outputUnit [minute|hour|pomodoro|day|week]
 
 ### Estimate tag
-When using the Taskpaper format the `--etstimateTag` option can be used to set the label of the estimate tag to something different from `est`; this means that the
+When using the Taskpaper format the `--estimateTag` option can be used to set the label of the estimate tag to something different from `est`; this means that the
 
     - do something @est(30)
 

@@ -10,12 +10,14 @@
     ],
     "minimum-stability": "dev",
     "require-dev": {
-        "codeception/codeception": "*",
-        "codeception/remote-debug": "*"
+        "codeception/codeception": "*"
     },
 	"autoload": {
 		"psr-4":{
 			"PPPlan\\": "src/"
 		}
-	}
+	},
+    "require": {
+        "symfony/console": "~2.4"
+    }
 }

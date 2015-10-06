@@ -3,46 +3,11 @@
 
 namespace PPPlan;
 
+use Symfony\Component\Console\Application;
 
 include 'vendor/autoload.php';
 
-$objective = new Objective();
-$tasks = array();
-$review = false;
-if (isset($argv[1])) {
-    switch ($argv[1]) {
-        case 'review':
-            if (isset($argv[2])) {
-                $review = true;
-                $file = $argv[2];
-                $listReader = new ListReader($file);
-                $objective = $listReader->getObjective();
-                $tasks = $listReader->getTodos();
-            } else {
-                echo "Please provide a file to review.";
-                exit;
-            }
-            break;
-
-        default:
-            break;
-    }
-}
-$optionReader = new OptionReader();
-$defaultOptions = $optionReader->getDefaults();
-$options = $optionReader->getOptionsFrom($argv);
-$options = (object)array_merge((array)$defaultOptions, (array)$options);
-
-$hourReader = new HourReader($options);
-$format = isset($options->format) ? $options->format : 'txt';
-// setup the unit to use for the output
-$outputUnit = isset($options->outputUnit) ? $options->outputUnit : null;
-$outputUnit = Units::createOutputUnitFrom($outputUnit);
-$listFormatter = new ListFormatter($format, $outputUnit, $options);
-$ppplan = new PPPlan($hourReader, $listFormatter, $review, $options);
-
-$ppplan->theHead($objective);
-$tasks = $ppplan->theQuestions($objective, $tasks, $review);
-$list = $ppplan->theResponse($objective, $tasks);
-$ppplan->theSavingOptions($objective, $tasks);
-?>
+$application = new Application();
+$application->add(new NewCommand());
+$application->add(new ReviewCommand());
+$application->run();

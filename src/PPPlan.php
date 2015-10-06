@@ -3,26 +3,28 @@
 namespace PPPlan;
 
 
+use Symfony\Component\Console\Input\Input;
+
 class PPPlan
 {
-    
+
     protected $hourReader;
     protected $listFormatter;
     protected $review;
     protected $lineColor = 'cyan';
     protected $listLineColor = 'white';
     protected $headPrinted;
-    protected $options;
-    
-    public function __construct(HourReader $hourReader, ListFormatter $listFormatter, $review = false, $options)
+    protected $input;
+
+    public function __construct(HourReader $hourReader, ListFormatter $listFormatter, $review = false, Input $input)
     {
         $this->hourReader = $hourReader;
         $this->listFormatter = $listFormatter;
         $this->review = $review;
         $this->headPrinted = false;
-        $this->options = $options;
+        $this->input = $input;
     }
-    
+
     public function theHead(Objective $objective)
     {
         $this->maybeClear();
@@ -37,12 +39,12 @@ class PPPlan
             $objective->title = readline("What do you want to do?\n\n");
         }
     }
-    
+
     public function theQuestions(Objective $objective, array $tasks, $review = false)
     {
         $tasks = array_merge(array(
             new Task($objective->title, $objective->totalHours, !$review)
-        ) , $tasks);
+        ), $tasks);
         while ($this->thereAreUnestimated($tasks)) {
             foreach ($tasks as $task) {
                 if (!$task->toEstimate && $task->hours == 0) {
@@ -51,10 +53,10 @@ class PPPlan
                 $this->askEstimationFor($task, $tasks);
             }
         }
-        
+
         return $tasks;
     }
-    
+
     protected function askEstimationFor(Task $task, array & $tasks)
     {
         if ($task->hours > 0 && !$task->toEstimate) {
@@ -71,13 +73,13 @@ class PPPlan
         if ($task->hours == 0) {
             $task->toEstimate = false;
             $subTasks = $this->askDecomposeFor($task);
-            
+
             // remove the task from the tasks
             $key = array_search($task, $tasks);
             unset($tasks[$key]);
             $tasks = array_values($tasks);
             foreach ($subTasks as $subTask) {
-                
+
                 // 0 hours, to estimate
                 $tasks[] = new Task($subTask);
             }
@@ -85,7 +87,7 @@ class PPPlan
             $task->toEstimate = false;
         }
     }
-    
+
     protected function askDecomposeFor(Task $task)
     {
         $this->maybeClear();
@@ -93,7 +95,7 @@ class PPPlan
         $subTasks = explode(', ', readline("Ok, what's needed to $task->title?\n(Tasks in a comma separated list)\n\n"));
         return $subTasks;
     }
-    
+
     protected function thereAreUnestimated(array $tasks)
     {
         foreach ($tasks as $task) {
@@ -101,8 +103,9 @@ class PPPlan
                 return true;
             }
         }
+        return false;
     }
-    
+
     public function theResponse(Objective $objective, array $tasks, $echo = true)
     {
         $this->maybeClear();
@@ -113,10 +116,10 @@ class PPPlan
         if ($echo) {
             echo "\n" . $fileList . "\n\n";
         }
-        
+
         return $fileList;
     }
-    
+
     public function theSavingOptions(Objective $objective, array $tasks)
     {
         $answer = readline("Do you want to save the list to a file (y/n)? ");
@@ -140,13 +143,13 @@ class PPPlan
                 $shouldWrite = true;
             }
         } while (!$shouldWrite);
-        
+
         $this->listFormatter->setFormat($format);
         $list = $this->listFormatter->formatList($objective, $tasks);
-        
+
         // check for file existence
         if (file_exists($filePath)) {
-            
+
             // prepend the new list with newlines
             $list = "\n\n" . $list;
             if (file_put_contents($filePath, $list, FILE_APPEND)) {
@@ -154,36 +157,35 @@ class PPPlan
             }
         } else {
             if (file_put_contents($filePath, $list)) {
-                echo "List written to the $baseName file.";
+                echo "\nList written to the $baseName file.\n";
             }
         }
     }
-    
+
     protected function maybeClear()
     {
-        if (isset($this->options->clear) && $this->options->clear) {
+        if ($this->input->getOption('clear')) {
             System::clear();
         }
     }
-    
+
     protected function maybeNewline()
     {
-        if (!isset($this->options->clear) or !$this->options->clear) {
+        if ($this->input->getOption('clear')) {
             echo "\n";
         }
     }
-    
+
     protected function getTotalHoursFrom(array $tasks)
     {
         $totalHours = 0;
-        array_map(function (Task $task) use (&$totalHours)
-        {
-            $totalHours+= $task->hours;
+        array_map(function (Task $task) use (&$totalHours) {
+            $totalHours += $task->hours;
         }
-        , $tasks);
+            , $tasks);
         return $totalHours;
     }
-    
+
     /**
      * @param $fileName
      * @return array
@@ -199,20 +201,13 @@ class PPPlan
             $format
         );
     }
-    
+
     /**
      * @return string
      */
     protected function getFileFormat()
     {
-        $format = '';
-        if (!isset($this->options->format)) {
-            $line = "File format (taskpaper/txt)?\n";
-            $format = readline($line);
-        } else {
-            $format = $this->options->format;
-        }
-        $format = Formats::getValidFormatFor($format);
+        $format = Formats::getValidFormatFor($this->input->getArgument('format'));
         return $format;
     }
 }

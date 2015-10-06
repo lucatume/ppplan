@@ -3,6 +3,9 @@
 namespace PPPlan;
 
 
+use Symfony\Component\Console\Input\Input;
+use Symfony\Component\Console\Input\InputInterface;
+
 class HourReader
 {
     /**
@@ -11,14 +14,12 @@ class HourReader
     protected $pomodoroDuration;
     protected $dayDuration;
     protected $weekDuration;
-    protected $options = null;
 
-    public function __construct($options = null)
+    public function __construct(InputInterface $input)
     {
-        $this->options = is_null($options) ? new \stdClass() : $options;
-        $this->dayDuration = isset($this->options->dayDuration) ? floatval($this->options->dayDuration) : 24;
-        $this->weekDuration = isset($this->options->weekDuration) ? floatval($this->options->weekDuration) : 7;
-        $this->pomodoroDuration = isset($this->options->pomodoroDuration) ? floatval($this->options->pomodoroDuration) : 30;
+        $this->dayDuration = floatval($input->getArgument('dayDuration'));
+        $this->weekDuration = floatval($input->getArgument('weekDuration'));
+        $this->pomodoroDuration = floatval($input->getArgument('pomodoroDuration'));
     }
 
     public function getHoursFrom($answer)
@@ -37,19 +38,5 @@ class HourReader
         }
         $answer = floatval($answer);
         return round($answer / $base, 2);
-    }
-
-    public function setPomodoroDuration($durationIncludingPause = 30)
-    {
-        $this->pomodoroDuration = intval($durationIncludingPause);
-    }
-
-    public function setDayDuration($duration = 24)
-    {
-        $this->dayDuration = floatval($duration);
-    }
-    public function setWeekDuration($duration = 7)
-    {
-        $this->weekDuration = floatval($duration);
     }
 }
