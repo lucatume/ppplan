@@ -1,3 +1,4 @@
 *.taskpaper
 *.txt
 tests/_output/*
+vendor

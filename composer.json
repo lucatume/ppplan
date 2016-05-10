@@ -8,7 +8,7 @@
             "email": "luca@theaveragedev.com"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require-dev": {
         "codeception/codeception": "*"
     },
